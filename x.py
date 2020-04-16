@@ -65,7 +65,7 @@ for i in range(0, 1000):
     for j in range(0, matrix_size):
         S[j] = S[j] - 0.001 * gradient[j]
     S = normalize()
-    print(S)
+    print(E(S))
 print(E(S))
 
 

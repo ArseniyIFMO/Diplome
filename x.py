@@ -60,7 +60,7 @@ print(grad)
 
 
 
-for i in range(0, 1000):
+for i in range(0, 10000):
     gradient = grad()
     for j in range(0, matrix_size):
         S[j] = S[j] - 0.001 * gradient[j]

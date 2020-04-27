@@ -67,10 +67,22 @@ def normalize():
 
 
 for k in range(0, 10000):
+    newS = np.random.randn(SX + 2, SY + 2, 3)
+    for i in range(0, SX + 2):
+        newS[i][0] = np.array([0, 0, 0])
+        newS[i][SY + 1] = np.array([0, 0, 0])
+
+    for i in range(0, SY + 2):
+        newS[0][i] = np.array([0, 0, 0])
+        newS[SX + 1][i] = np.array([0, 0, 0])
+
     for i in range(1, SX + 1):
         for j in range(1, SY + 1):
-            S[i][j] = S[i][j] - 0.001 * grad(i, j)
+            newS[i][j] = S[i][j] - 0.001 * grad(i, j)
+
+    S = newS
     normalize()
+    print(E())
 
 
 print(E())

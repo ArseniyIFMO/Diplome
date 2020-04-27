@@ -65,25 +65,15 @@ def normalize():
             S[i][j][1] = S[i][j][1] / norm
             S[i][j][2] = S[i][j][2] / norm
 
-print(np.dot(z, S[1][1]))
-print("GRAD:")
-print(grad(1, 1))
-for i in range(0, SX + 2):
-    print()
-    for j in range(0, SY + 2):
-        print(S[i][j], end = " ")
-print()
-print()
-print()
+
 for k in range(0, 10000):
     for i in range(1, SX + 1):
         for j in range(1, SY + 1):
             S[i][j] = S[i][j] - 0.001 * grad(i, j)
     normalize()
-    normalPrintS()
-    print(E())
 
 
+print(E())
 
 
 #

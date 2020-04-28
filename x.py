@@ -1,11 +1,7 @@
 from vectors import Point, Vector
 import numpy as np
 
-
-
-
-#matrix_size = 16
-
+# matrix_size = 16
 
 
 SX = 4
@@ -21,14 +17,17 @@ for i in range(0, SX + 2):
 for i in range(0, SY + 2):
     S[0][i] = np.array([0, 0, 0])
     S[SX + 1][i] = np.array([0, 0, 0])
-K = 1
-D = 1
-I = 1
-#print(S.shape)
-#np.roll
-#np.cross
-#alpha
-#steps = 1000
+
+K = 0.4
+D = 0.35
+J = 1
+step = 0.1
+
+# print(S.shape)
+# np.roll
+# np.cross
+# alpha
+# steps = 1000
 def normalPrintS():
     for i in range(0, SX + 2):
         print()
@@ -36,56 +35,67 @@ def normalPrintS():
             print(S[i][j], end=" ")
     print()
 
+
 def grad(i, j):
-  tmp = (S[i+1][j] + S[i - 1][j] + S[i][j + 1] + S[i][j - 1])
-  tmp2 = D * ( np.cross(S[i + 1][j] , x) + np.cross(S[i][j + 1] , y) - np.cross(S[i - 1][j] , x) - np.cross(S[i][j - 1] , y))
-  tmp3 = z * 2 * K * np.dot(z, S[i][j]).item()
-  res = - tmp - tmp2 - tmp3
-  return res
+    tmp = J * (S[i + 1][j] + S[i - 1][j] + S[i][j + 1] + S[i][j - 1])
+    tmp2 = D * (np.cross(S[i + 1][j], x) + np.cross(S[i][j + 1], y) - np.cross(S[i - 1][j], x) - np.cross(S[i][j - 1], y))
+    tmp3 = 2 * z * K * np.dot(z, S[i][j]).item()
+    res = - tmp + tmp2 - tmp3
+    return res
 
 
 def E():
     res = 0
     for i in range(1, SX + 1):
         for j in range(1, SY + 1):
-            tmp = np.dot( (S[i + 1][j] + S[i - 1][j] + S[i][j + 1] + S[i][j - 1]), S[i][j])
-            tmp2 = D * (+ np.dot( np.cross(S[i + 1][j], S[i][j]), x)
-                        + np.dot( np.cross(S[i][j + 1], S[i][j]), y)
-                        - np.dot( np.cross(S[i - 1][j], S[i][j]), x)
-                        - np.dot( np.cross(S[i][j - 1], S[i][j]), y) )
-            tmp3 = 2 * K * np.dot(z, S[i][j]) * np.dot(z, S[i][j])
-            res = res - tmp - tmp2 - tmp3
+            tmp = J * np.dot((S[i + 1][j] + S[i - 1][j] + S[i][j + 1] + S[i][j - 1]), S[i][j])
+            tmp2 = D * (+ np.dot(np.cross(S[i + 1][j], S[i][j]), x)
+                        + np.dot(np.cross(S[i][j + 1], S[i][j]), y)
+                        - np.dot(np.cross(S[i - 1][j], S[i][j]), x)
+                        - np.dot(np.cross(S[i][j - 1], S[i][j]), y))
+            tmp3 = K * (np.dot(z, S[i][j]) ** 2)
+            res = res - tmp / 2 - tmp2 / 2 - tmp3
     return res
+
+def E2():
+    res = 0
+    for i in range(1, SX + 1):
+        for j in range(1, SY + 1):
+            res += np.dot(S[i][j], grad(i,j))
+    return res * 0.5
 
 def normalize():
     for i in range(1, SX + 1):
         for j in range(1, SY + 1):
             norm = S[i][j][0] * S[i][j][0] + S[i][j][1] * S[i][j][1] + S[i][j][2] * S[i][j][2]
+            norm = np.sqrt(norm)
             S[i][j][0] = S[i][j][0] / norm
             S[i][j][1] = S[i][j][1] / norm
             S[i][j][2] = S[i][j][2] / norm
 
+normalize()
+
 
 for k in range(0, 10000):
-    newS = np.random.randn(SX + 2, SY + 2, 3)
-    for i in range(0, SX + 2):
-        newS[i][0] = np.array([0, 0, 0])
-        newS[i][SY + 1] = np.array([0, 0, 0])
-
-    for i in range(0, SY + 2):
-        newS[0][i] = np.array([0, 0, 0])
-        newS[SX + 1][i] = np.array([0, 0, 0])
-
+    newS = np.zeros_like(S)
+    maxNorm = 0
     for i in range(1, SX + 1):
         for j in range(1, SY + 1):
-            newS[i][j] = S[i][j] - 0.001 * grad(i, j)
+            g = grad(i,  j)
+            projGradOnS = np.dot(S[i][j], g)
+            g = g - projGradOnS * S[i][j]
+            maxNorm = np.maximum(maxNorm, np.linalg.norm(g))
+            newS[i][j] = S[i][j] - step * grad(i, j)
 
     S = newS
     normalize()
-    print(E())
-
+    print(E(), maxNorm)
 
 print(E())
+
+
+
+# v4 = np.dot(v1, v2) -- скалярное произведение векторов
 
 
 #

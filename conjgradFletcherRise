@@ -86,9 +86,9 @@ for k in range(0, 10000):
     maxNorm = 0
     sum_of_prev_grad = 0
     sum_of_grad  =  0
-
-
-
+    for i in range(1, SX + 1):
+        for j in range(1, SY + 1):
+            cur_grad[i][j] = grad(i,  j)
 
     for i in range(1, SX + 1):
         for j in range(1, SY + 1):
@@ -102,12 +102,12 @@ for k in range(0, 10000):
 
     for i in range(1, SX + 1):
         for j in range(1, SY + 1):
-            g = cur_grad[i][j]
+            g = grad(i,  j)
             projGradOnS = np.dot(S[i][j], g)
             g = g - projGradOnS * S[i][j]
             maxNorm = np.maximum(maxNorm, np.linalg.norm(g))
-            prev_grad[i][j] = cur_grad[i][j]
-            newS[i][j] = S[i][j] - alpha * cur_grad[i][j]
+            prev_grad[i][j] =grad(i, j)
+            newS[i][j] = S[i][j] - alpha * grad(i, j)
 
     S = newS
     normalize()

@@ -1,4 +1,3 @@
-from vectors import Point, Vector
 import numpy as np
 
 # matrix_size = 16
@@ -39,7 +38,7 @@ def normalPrintS():
 def grad(i, j):
     tmp = J * (S[i + 1][j] + S[i - 1][j] + S[i][j + 1] + S[i][j - 1])
     tmp2 = D * (np.cross(S[i + 1][j], x) + np.cross(S[i][j + 1], y) - np.cross(S[i - 1][j], x) - np.cross(S[i][j - 1], y))
-    tmp3 = 2 * z * K * np.dot(z, S[i][j]).item()
+    tmp3 = 2 * z * K * np.dot  (z, S[i][j]).item()
     res = - tmp + tmp2 - tmp3
     return res
 

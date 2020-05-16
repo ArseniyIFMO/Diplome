@@ -107,7 +107,7 @@ for k in range(0, 10000):
             g = g - projGradOnS * S[i][j]
             maxNorm = np.maximum(maxNorm, np.linalg.norm(g))
             prev_grad[i][j] =grad(i, j)
-            newS[i][j] = S[i][j] - alpha * cur_grad[i][j]
+            newS[i][j] = S[i][j] - alpha * grad(i, j)
 
     S = newS
     normalize()

@@ -1,4 +1,3 @@
-
 import numpy as np
 
 # matrix_size = 16
@@ -98,7 +97,7 @@ for k in range(0, 10000):
         for j in range(1, SY + 1):
             sum_of_grad = sum_of_grad + np.dot(cur_grad[i][j], cur_grad[i][j])
 
-    alpha = sum_of_grad / sum_of_prev_grad
+    omega = sum_of_grad / sum_of_prev_grad
 
     for i in range(1, SX + 1):
         for j in range(1, SY + 1):
@@ -106,9 +105,12 @@ for k in range(0, 10000):
             projGradOnS = np.dot(S[i][j], g)
             g = g - projGradOnS * S[i][j]
             maxNorm = np.maximum(maxNorm, np.linalg.norm(g))
-            prev_grad[i][j] =grad(i, j)
-            newS[i][j] = S[i][j] - alpha * cur_grad[i][j]
-
+            if(k == 0):
+                prev_grad[i][j] = grad(i, j)
+                newS[i][j] = S[i][j] - step * (grad(i, j))
+            else:
+                newS[i][j] = S[i][j] - step * (grad(i, j)) + ( step * omega *  prev_grad[i][j] )
+                prev_grad[i][j] = grad(i, j) + prev_grad[i][j] * omega
     S = newS
     normalize()
     print(E(), maxNorm)

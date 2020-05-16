@@ -8,9 +8,22 @@ def norm(R):
     else:
         return min
 
-N = 5
+
+def reshape(x):
+    sz = x.size
+    f = np.zeros(2 * sz - 1)
+    for i in range(0, sz):
+        f[2 * i] = x[i]
+    print(f)
+    for i in range(0, sz - 1):
+        f[2 * i + 1] = (f[2 * i] + f[2 * i + 2]) / 2
+    return f
+
+
+
+N = 10
 eps = 0.001
-n = 5
+n = 10
 alpha = 0.01
 f = np.zeros(n)
 b = np.random.randn(n)

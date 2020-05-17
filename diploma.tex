@@ -9,13 +9,59 @@
     \usepackage{wrapfig}
     \usepackage{pgfplots}
 
+% Default fixed font does not support bold face
+\DeclareFixedFont{\ttb}{T1}{txtt}{bx}{n}{12} % for bold
+\DeclareFixedFont{\ttm}{T1}{txtt}{m}{n}{12}  % for normal
+
+% Custom colors
+\usepackage{color}
+\definecolor{deepblue}{rgb}{0,0,0.5}
+\definecolor{deepred}{rgb}{0.6,0,0}
+\definecolor{deepgreen}{rgb}{0,0.5,0}
+
+\usepackage{listings}
+
+% Python style for highlighting
+\newcommand\pythonstyle{\lstset{
+language=Python,
+basicstyle=\ttm,
+otherkeywords={self},             % Add keywords here
+keywordstyle=\ttb\color{deepblue},
+emph={MyClass,__init__},          % Custom highlighting
+emphstyle=\ttb\color{deepred},    % Custom highlighting style
+stringstyle=\color{deepgreen},
+frame=tb,                         % Any extra options here
+showstringspaces=false            %
+}}
+
+
+% Python environment
+\lstnewenvironment{python}[1][]
+{
+\pythonstyle
+\lstset{#1}
+}
+{}
+
+% Python for external files
+\newcommand\pythonexternal[2][]{{
+\pythonstyle
+\lstinputlisting[#1]{#2}}}
+
+% Python for inline
+\newcommand\pythoninline[1]{{\pythonstyle\lstinline!#1!}}
     \begin{document}
     \section{Введение}
+    В данной работе будет решаться задача поиска метастабильных состояний магнитных систем. Метастабльное состояние - это минимум функционала энергии, соответственно, в работе требуется находить минимум некоторых функция с некоторыми ограничениями. Я рассмотрю различне методы выполнения данной задачи, сравню их скорость сходимости, сделаю вывод о их работоспособности в условиях данной задачи, скорости сходимости и так далее.
+    Данная задача очень важна в теоретической физике, особенно важна скорость сходимости, так как в реальных физических системах количество частиц может быть очень велико, и ассимтотика очень важна прирешении данной задачи.
+    Я собираюсь использовать градиентный спуск, различные его вариации, а так же многосеточные методы для решения данной задачи.
+    \newpage
+    \section{Теоретическая часть работы}
     Состояние магнитной системы описывается
     $E(S) = S^t*A*S + B*S$, где $A$ - матрица $n * n$, $B$ - матрица $1 * n$,
     каждый элемент которой - трехмерный вектор $(x, y, z)$
-    А $S$ -- матрица $1*n$, каждый элемент которой - трехмерный вектор $S_i = (x, y, z)$. Эта матрица и описывает состояние магнитной системы.
-    Причем, требуется что бы норма каждого из векторов была равна $1$
+    А $S$ -- матрица $1*n$, каждый элемент которой - трехмерный вектор $S_i = (x, y, z)$ - вектор спина $i$-го скирмиона. Эта матрица и описывает состояние магнитной системы.
+    Причем, требуется что бы норма каждого из векторов была равна $1$.
     ($x^2 + y ^ 2 + z ^ 2 = 1, \|S_{i, j} = 1\|$)
     В нашей задаче
     \begin{equation*}
@@ -35,7 +81,10 @@
     $E(S) = \displaystyle{\sum_{i, j}} J* (S_{i - 1, j} + S_{i + 1, j} + S_{i, j - 1} + S_{i, j + 1}) \cdot S_{i,j} + \\
     D * (-S_{i - 1, j} \times x  + S_{i + 1, j} \times x - S_{i, j - 1} \times y - S_{i, j + 1} \times y)
     + \\
-    K * (z \cdot S_{i,j}) ^ 2$\\
+    K * (z \cdot S_{i,j}) ^ 2$,\\
+    где
+    $\displaystyle{\sum_{i, j}} J* (S_{i - 1, j} + S_{i + 1, j} + S_{i, j - 1} + S_{i, j + 1}) \cdot S_{i,j}$ -- энергия обмена, а $D * (-S_{i - 1, j} \times x  + S_{i + 1, j} \times x - S_{i, j - 1} \times y - S_{i, j + 1} \times y)$  -- взаимодействие Джелошински - Мория.
+    \newpage
     \section{Методы решения}
     \subsection{Метод 1}
     Первый метод которым можно воспользоваться  - градиентный спуск.
@@ -46,16 +95,455 @@
     Однако, очевидно, после такого шага может  нарушится условие $\|S_{i, j} = 1\|$.\\
     Тогда, будем действовать следующим образом. Сначала \\$S_{i, j} = S_{i, j} - \alpha * \nabla E(S)_{i, j}$, а потом отнормируем каждый элемент, то есть $S_{i, j} = \frac{S_{i, j}}{\|S_{i, j}\|}$.\\
     В этом варианте берется $\alpha = 0.001$\\
+    Сущетвует несколько способов задать критерий остановки: например, сделать фиксированное число итераций, либо делать итерации пока !!!!!
     \subsection{Метод 2}
     Воспользуемся методом сопряженных градиентов.\\
     Сперва опробуем метод Флетчера - Риза
     $S^k_{i, j} = S^{k-1}_{i, j} + \alpha * \Delta^k $, где $\Delta^k = -\nabla S_{i, j} + \omega * \Delta ^  {k-1} $,
-    $\omega  = \frac{\| \nabla S^k \|}{\| \nabla S^{k-1} \|}$
-
-
+    $\omega  = \frac{\| \nabla S^k \|^2}{\| \nabla S^{k-1} \|^2}$\\
+    Будем считать, что $\Delta^0=(0,0,0)$
     \subsection{Метод 3}
+    Попробуем для решения данной задачи использовать метод второго порядка. Например, метод Ньютона.
+
+    \subsection{Метод 4}
     Для дальнейшего ускорения можно использовать multigrid.
     У градиентного спуска имеется некоторая начальная точка, она может быть довольно далека от оптимальной.
     Что бы начинать в точке ближе к оптимальной и, соответственно, что бы алгоритм сходиля быстрее и  используется multigrid.\\
+    Алгоритм
+    \section{Практическая часть}
+    \subsection{Метод 1}
+    Приведу реализацию алгоритма на питоне и  сравним их быстродействие.
+    Реализация с фиксированным $\alpha$\\
+\begin{python}
+    def grad(i, j):
+        tmp = J * (S[i + 1][j] + S[i - 1][j] +
+        +S[i][j + 1] + S[i][j - 1])
+        tmp2 = D * (np.cross(S[i + 1][j], x)
+        +np.cross(S[i][j + 1], y)
+        - np.cross(S[i - 1][j], x)
+        - np.cross(S[i][j - 1], y))
+        tmp3 = 2 * z * K * np.dot  (z, S[i][j]).item()
+        res = - tmp + tmp2 - tmp3
+        return res
 
+    def E():
+        res = 0
+        for i in range(1, SX + 1):
+            for j in range(1, SY + 1):
+                tmp = J * np.dot((S[i + 1][j] + S[i - 1][j] +
+                S[i][j + 1] + S[i][j - 1]), S[i][j])
+                tmp2 = D * (
+                + np.dot(np.cross(S[i + 1][j], S[i][j]), x)
+                + np.dot(np.cross(S[i][j + 1], S[i][j]), y)
+                - np.dot(np.cross(S[i - 1][j], S[i][j]), x)
+                - np.dot(np.cross(S[i][j - 1], S[i][j]), y))
+                tmp3 = K * (np.dot(z, S[i][j]) ** 2)
+                res = res - tmp / 2 - tmp2 / 2 - tmp3
+        return res
+
+    def normalize():
+    for i in range(1, SX + 1):
+        for j in range(1, SY + 1):
+            norm = S[i][j][0] * S[i][j][0] +
+                   S[i][j][1] * S[i][j][1] +
+                   S[i][j][2] * S[i][j][2]
+            norm = np.sqrt(norm)
+            S[i][j][0] = S[i][j][0] / norm
+            S[i][j][1] = S[i][j][1] / norm
+            S[i][j][2] = S[i][j][2] / norm
+
+
+    SX = 4
+    SY = 5
+    x = np.array([1.0, 0.0, 0.0])
+    y = np.array([0.0, 1.0, 0.0])
+    z = np.array([0.0, 0.0, 1.0])
+    S = np.random.randn(SX + 2, SY + 2, 3)
+    for i in range(0, SX + 2):
+        S[i][0] = np.array([0, 0, 0])
+        S[i][SY + 1] = np.array([0, 0, 0])
+
+    for i in range(0, SY + 2):
+        S[0][i] = np.array([0, 0, 0])
+        S[SX + 1][i] = np.array([0, 0, 0])
+
+    K = 0.4
+    D = 0.35
+    J = 1
+    step = 0.1
+
+    for k in range(0, 10000):
+        newS = np.zeros_like(S)
+        maxNorm = 0
+        for i in range(1, SX + 1):
+            for j in range(1, SY + 1):
+                g = grad(i,  j)
+                projGradOnS = np.dot(S[i][j], g)
+                g = g - projGradOnS * S[i][j]
+                maxNorm = np.maximum(maxNorm, np.linalg.norm(g))
+                newS[i][j] = S[i][j] - step * grad(i, j)
+
+        S = newS
+        normalize()
+
+print(E())
+\end{python}
+\subsection{Метод 2}
+ Приведу реализацию метода сопряженных градиентов Флетчера - Ривза
+ \begin{python}
+ import numpy as np
+SX = 4
+SY = 5
+x = np.array([1.0, 0.0, 0.0])
+y = np.array([0.0, 1.0, 0.0])
+z = np.array([0.0, 0.0, 1.0])
+S = np.random.randn(SX + 2, SY + 2, 3)
+for i in range(0, SX + 2):
+    S[i][0] = np.array([0, 0, 0])
+    S[i][SY + 1] = np.array([0, 0, 0])
+
+for i in range(0, SY + 2):
+    S[0][i] = np.array([0, 0, 0])
+    S[SX + 1][i] = np.array([0, 0, 0])
+
+K = 0.4
+D = 0.35
+J = 1
+step = 0.1
+
+def normalPrintS():
+    for i in range(0, SX + 2):
+        print()
+        for j in range(0, SY + 2):
+            print(S[i][j], end=" ")
+    print()
+
+
+def grad(i, j):
+    tmp = J * (S[i + 1][j] + S[i - 1][j] +
+        S[i][j + 1] + S[i][j - 1])
+    tmp2 = D * (np.cross(S[i + 1][j], x) +
+    np.cross(S[i][j + 1], y) -
+    np.cross(S[i - 1][j], x) - np.cross(S[i][j - 1], y))
+    tmp3 = 2 * z * K * np.dot(z, S[i][j]).item()
+    res = - tmp + tmp2 - tmp3
+    return res
+
+
+def E():
+    res = 0
+    for i in range(1, SX + 1):
+        for j in range(1, SY + 1):
+            tmp = J * np.dot((S[i + 1][j] + S[i - 1][j] + S[i][j + 1] + S[i][j - 1]), S[i][j])
+            tmp2 = D * (+ np.dot(np.cross(S[i + 1][j], S[i][j]), x)
+                        + np.dot(np.cross(S[i][j + 1], S[i][j]), y)
+                        - np.dot(np.cross(S[i - 1][j], S[i][j]), x)
+                        - np.dot(np.cross(S[i][j - 1], S[i][j]), y))
+            tmp3 = K * (np.dot(z, S[i][j]) ** 2)
+            res = res - tmp / 2 - tmp2 / 2 - tmp3
+    return res
+
+def E2():
+    res = 0
+    for i in range(1, SX + 1):
+        for j in range(1, SY + 1):
+            res += np.dot(S[i][j], grad(i,j))
+    return res * 0.5
+
+def normalize():
+    for i in range(1, SX + 1):
+        for j in range(1, SY + 1):
+            norm = S[i][j][0] * S[i][j][0] + S[i][j][1] * S[i][j][1]
+            + S[i][j][2] * S[i][j][2]
+            norm = np.sqrt(norm)
+            S[i][j][0] = S[i][j][0] / norm
+            S[i][j][1] = S[i][j][1] / norm
+            S[i][j][2] = S[i][j][2] / norm
+
+normalize()
+
+prev_grad =  np.random.randn(SX + 2, SY + 2, 3)
+cur_grad = np.random.randn(SX + 2, SY + 2, 3)
+for i in range(1, SX + 1):
+    for j in range(1, SY + 1):
+        prev_grad[i][j] = grad(i, j)
+
+for k in range(0, 10000):
+    newS = np.zeros_like(S)
+    maxNorm = 0
+    sum_of_prev_grad = 0
+    sum_of_grad  =  0
+
+
+    for i in range(1, SX + 1):
+        for j in range(1, SY + 1):
+            sum_of_prev_grad = sum_of_prev_grad +
+            np.dot(prev_grad[i][j], prev_grad[i][j])
+
+    for i in range(1, SX + 1):
+        for j in range(1, SY + 1):
+            sum_of_grad = sum_of_grad +
+            np.dot(grad(i, j), grad(i, j))
+
+    omega = sum_of_grad / sum_of_prev_grad
+
+    for i in range(1, SX + 1):
+        for j in range(1, SY + 1):
+            g = grad(i,  j)
+            projGradOnS = np.dot(S[i][j], g)
+            g = g - projGradOnS * S[i][j]
+            maxNorm = np.maximum(maxNorm, np.linalg.norm(g))
+            if(k == 0):
+                prev_grad[i][j] = grad(i, j)
+                newS[i][j] = S[i][j] -
+                step * (grad(i, j))
+            else:
+                newS[i][j] = S[i][j] - step * (grad(i, j))
+                + ( step * omega *  prev_grad[i][j] )
+                prev_grad[i][j] = grad(i, j) +
+                prev_grad[i][j] * omega
+    S = newS
+    normalize()
+    print(E(), maxNorm)
+
+print(E())
+ \end{python}
+ заметим, что в этой реализации алгоритма многократно пересчитывается $\nabla S_{i, j}$. Тогда можно не каждый раз вычислять ее, а  просто сохранять значение в массиве, что определенно даст ускорение.
+
+
+ \begin{python}
+ import numpy as np
+SX = 4
+SY = 5
+x = np.array([1.0, 0.0, 0.0])
+y = np.array([0.0, 1.0, 0.0])
+z = np.array([0.0, 0.0, 1.0])
+S = np.random.randn(SX + 2, SY + 2, 3)
+for i in range(0, SX + 2):
+    S[i][0] = np.array([0, 0, 0])
+    S[i][SY + 1] = np.array([0, 0, 0])
+
+for i in range(0, SY + 2):
+    S[0][i] = np.array([0, 0, 0])
+    S[SX + 1][i] = np.array([0, 0, 0])
+
+K = 0.4
+D = 0.35
+J = 1
+step = 0.1
+
+def normalPrintS():
+    for i in range(0, SX + 2):
+        print()
+        for j in range(0, SY + 2):
+            print(S[i][j], end=" ")
+    print()
+
+
+def grad(i, j):
+    tmp = J * (S[i + 1][j] + S[i - 1][j] +
+        S[i][j + 1] + S[i][j - 1])
+    tmp2 = D * (np.cross(S[i + 1][j], x) +
+    np.cross(S[i][j + 1], y) -
+    np.cross(S[i - 1][j], x) - np.cross(S[i][j - 1], y))
+    tmp3 = 2 * z * K * np.dot(z, S[i][j]).item()
+    res = - tmp + tmp2 - tmp3
+    return res
+
+
+def E():
+    res = 0
+    for i in range(1, SX + 1):
+        for j in range(1, SY + 1):
+            tmp = J * np.dot((S[i + 1][j] + S[i - 1][j] + S[i][j + 1] + S[i][j - 1]), S[i][j])
+            tmp2 = D * (+ np.dot(np.cross(S[i + 1][j], S[i][j]), x)
+                        + np.dot(np.cross(S[i][j + 1], S[i][j]), y)
+                        - np.dot(np.cross(S[i - 1][j], S[i][j]), x)
+                        - np.dot(np.cross(S[i][j - 1], S[i][j]), y))
+            tmp3 = K * (np.dot(z, S[i][j]) ** 2)
+            res = res - tmp / 2 - tmp2 / 2 - tmp3
+    return res
+
+def E2():
+    res = 0
+    for i in range(1, SX + 1):
+        for j in range(1, SY + 1):
+            res += np.dot(S[i][j], grad(i,j))
+    return res * 0.5
+
+def normalize():
+    for i in range(1, SX + 1):
+        for j in range(1, SY + 1):
+            norm = S[i][j][0] * S[i][j][0] + S[i][j][1] * S[i][j][1]
+            + S[i][j][2] * S[i][j][2]
+            norm = np.sqrt(norm)
+            S[i][j][0] = S[i][j][0] / norm
+            S[i][j][1] = S[i][j][1] / norm
+            S[i][j][2] = S[i][j][2] / norm
+
+normalize()
+
+prev_grad =  np.random.randn(SX + 2, SY + 2, 3)
+cur_grad = np.random.randn(SX + 2, SY + 2, 3)
+for i in range(1, SX + 1):
+    for j in range(1, SY + 1):
+        prev_grad[i][j] = grad(i, j)
+for i in range(1, SX + 1):
+    for j in range(1, SY + 1):
+        cur_grad[i][j] = grad(i,  j)
+for k in range(0, 10000):
+    newS = np.zeros_like(S)
+    maxNorm = 0
+    sum_of_prev_grad = 0
+    sum_of_grad  =  0
+
+
+    for i in range(1, SX + 1):
+        for j in range(1, SY + 1):
+            sum_of_prev_grad = sum_of_prev_grad +
+            np.dot(prev_grad[i][j], prev_grad[i][j])
+
+    for i in range(1, SX + 1):
+        for j in range(1, SY + 1):
+            sum_of_grad = sum_of_grad +
+            np.dot( cur_grad[i][j] ,  cur_grad[i][j] )
+
+    omega = sum_of_grad / sum_of_prev_grad
+
+    for i in range(1, SX + 1):
+        for j in range(1, SY + 1):
+            g = grad(i,  j)
+            projGradOnS = np.dot(S[i][j], g)
+            g = g - projGradOnS * S[i][j]
+            maxNorm = np.maximum(maxNorm, np.linalg.norm(g))
+            if(k == 0):
+                prev_grad[i][j] = grad(i, j)
+                newS[i][j] = S[i][j] -
+                step * (grad(i, j))
+            else:
+                newS[i][j] = S[i][j] - step * ( cur_grad[i][j] )
+                + ( step * omega *  prev_grad[i][j] )
+                prev_grad[i][j] =  cur_grad[i][j]  +
+                prev_grad[i][j] * omega
+    S = newS
+    normalize()
+    print(E(), maxNorm)
+
+print(E())
+ \end{python}
+ \subsection{Метод 2.1}
+ Можно попробоватьреализовать обычный градиентный спуск, но не с фиксированным $\alpha$, а с $\alpha = \frac{\| \nabla S^k \|^2}{\| \nabla S^{k-1} \|^2}$\\
+  \begin{python}
+
+SX = 4
+SY = 5
+x = np.array([1.0, 0.0, 0.0])
+y = np.array([0.0, 1.0, 0.0])
+z = np.array([0.0, 0.0, 1.0])
+S = np.random.randn(SX + 2, SY + 2, 3)
+for i in range(0, SX + 2):
+    S[i][0] = np.array([0, 0, 0])
+    S[i][SY + 1] = np.array([0, 0, 0])
+
+for i in range(0, SY + 2):
+    S[0][i] = np.array([0, 0, 0])
+    S[SX + 1][i] = np.array([0, 0, 0])
+
+K = 0.4
+D = 0.35
+J = 1
+step = 0.1
+
+def normalPrintS():
+    for i in range(0, SX + 2):
+        print()
+        for j in range(0, SY + 2):
+            print(S[i][j], end=" ")
+    print()
+
+
+def grad(i, j):
+    tmp = J * (S[i + 1][j] + S[i - 1][j] + S[i][j + 1] + S[i][j - 1])
+    tmp2 = D * (np.cross(S[i + 1][j], x) + np.cross(S[i][j + 1], y) - np.cross(S[i - 1][j], x) - np.cross(S[i][j - 1], y))
+    tmp3 = 2 * z * K * np.dot(z, S[i][j]).item()
+    res = - tmp + tmp2 - tmp3
+    return res
+
+
+def E():
+    res = 0
+    for i in range(1, SX + 1):
+        for j in range(1, SY + 1):
+            tmp = J * np.dot((S[i + 1][j] + S[i - 1][j] + S[i][j + 1] + S[i][j - 1]), S[i][j])
+            tmp2 = D * (+ np.dot(np.cross(S[i + 1][j], S[i][j]), x)
+                        + np.dot(np.cross(S[i][j + 1], S[i][j]), y)
+                        - np.dot(np.cross(S[i - 1][j], S[i][j]), x)
+                        - np.dot(np.cross(S[i][j - 1], S[i][j]), y))
+            tmp3 = K * (np.dot(z, S[i][j]) ** 2)
+            res = res - tmp / 2 - tmp2 / 2 - tmp3
+    return res
+
+def E2():
+    res = 0
+    for i in range(1, SX + 1):
+        for j in range(1, SY + 1):
+            res += np.dot(S[i][j], grad(i,j))
+    return res * 0.5
+
+def normalize():
+    for i in range(1, SX + 1):
+        for j in range(1, SY + 1):
+            norm = S[i][j][0] * S[i][j][0] + S[i][j][1] * S[i][j][1] + S[i][j][2] * S[i][j][2]
+            norm = np.sqrt(norm)
+            S[i][j][0] = S[i][j][0] / norm
+            S[i][j][1] = S[i][j][1] / norm
+            S[i][j][2] = S[i][j][2] / norm
+
+normalize()
+
+prev_grad =  np.random.randn(SX + 2, SY + 2, 3)
+cur_grad = np.random.randn(SX + 2, SY + 2, 3)
+for i in range(1, SX + 1):
+    for j in range(1, SY + 1):
+        prev_grad[i][j] = grad(i, j)
+
+for k in range(0, 10000):
+    newS = np.zeros_like(S)
+    maxNorm = 0
+    sum_of_prev_grad = 0
+    sum_of_grad  =  0
+    for i in range(1, SX + 1):
+        for j in range(1, SY + 1):
+            cur_grad[i][j] = grad(i,  j)
+
+    for i in range(1, SX + 1):
+        for j in range(1, SY + 1):
+            sum_of_prev_grad = sum_of_prev_grad + np.dot(prev_grad[i][j], prev_grad[i][j])
+
+    for i in range(1, SX + 1):
+        for j in range(1, SY + 1):
+            sum_of_grad = sum_of_grad + np.dot(cur_grad[i][j], cur_grad[i][j])
+
+    alpha = sum_of_grad / sum_of_prev_grad
+
+    for i in range(1, SX + 1):
+        for j in range(1, SY + 1):
+            g = grad(i,  j)
+            projGradOnS = np.dot(S[i][j], g)
+            g = g - projGradOnS * S[i][j]
+            maxNorm = np.maximum(maxNorm, np.linalg.norm(g))
+            prev_grad[i][j] =grad(i, j)
+            newS[i][j] = S[i][j] - alpha * grad(i, j)
+
+    S = newS
+    normalize()
+    print(E(), maxNorm)
+
+print(E())
+
+ \end{python}
+
+ Сравним быстродействие данных методов:
+    \section{Заключение}
+    Как можно заметить, все перечисленные мною методы решают поставленную задачу, с той или иной скоростью. Соответственное, при решении данной задачи можно пользоваться любым из них.
     \end{document}

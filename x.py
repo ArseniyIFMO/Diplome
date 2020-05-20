@@ -83,6 +83,7 @@ for k in range(0, 10000):
             g = grad(i,  j)
             projGradOnS = np.dot(S[i][j], g)
             g = g - projGradOnS * S[i][j]
+            print(g)
             maxNorm = np.maximum(maxNorm, np.linalg.norm(g))
             newS[i][j] = S[i][j] - step * grad(i, j)
 

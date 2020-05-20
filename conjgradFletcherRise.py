@@ -79,8 +79,9 @@ cur_grad = np.random.randn(SX + 2, SY + 2, 3)
 for i in range(1, SX + 1):
     for j in range(1, SY + 1):
         prev_grad[i][j] = grad(i, j)
-
-for k in range(0, 10000):
+omega = 1
+k = 0
+while(omega > 0.001):
     newS = np.zeros_like(S)
     maxNorm = 0
     sum_of_prev_grad = 0
@@ -113,8 +114,8 @@ for k in range(0, 10000):
                 prev_grad[i][j] = grad(i, j) + prev_grad[i][j] * omega
     S = newS
     normalize()
-    print(E(), maxNorm)
-
+    print(E(),omega)
+    k = k + 1
 print(E())
 
 

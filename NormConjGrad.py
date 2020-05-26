@@ -42,6 +42,14 @@ def grad(i, j):
     res = - tmp + tmp2 - tmp3
     return res
 
+def gradX(X, i, j):
+    tmp = J * (X[i + 1][j] + X[i - 1][j] + X[i][j + 1] + X[i][j - 1])
+    tmp2 = D * (np.cross(X[i + 1][j], x) + np.cross(X[i][j + 1], y) - np.cross(X[i - 1][j], x) - np.cross(X[i][j - 1], y))
+    tmp3 = 2 * z * K * np.dot(z, X[i][j]).item()
+    res = - tmp + tmp2 - tmp3
+    return res
+
+
 
 def E():
     res = 0
@@ -81,41 +89,37 @@ for i in range(1, SX + 1):
         prev_grad[i][j] = grad(i, j)
 omega = 1
 k = 0
+SinTheirCode = np.random.randn(SX + 2, SY + 2, 3)
+for i in range(1, SX + 1):
+    for j in range(1, SY + 1):
+        SinTheirCode[i][j] = grad(i, j)
+
+
 while(omega > 0.001):
-    newS = np.zeros_like(S)
-    maxNorm = 0
-    sum_of_prev_grad = 0
-    sum_of_grad  =  0
+    ch = 0
+    zn = 0
     for i in range(1, SX + 1):
         for j in range(1, SY + 1):
-            cur_grad[i][j] = grad(i,  j)
+            ch = ch + np.dot(grad(i,j), gradX(SinTheirCode, i, j))
+            zn = zn + np.dot(gradX(SinTheirCode, i, j), SinTheirCode[i][j])
 
+    beta = ch / zn
     for i in range(1, SX + 1):
         for j in range(1, SY + 1):
-            sum_of_prev_grad = sum_of_prev_grad + np.dot(prev_grad[i][j], prev_grad[i][j])
-
+            SinTheirCode[i][j] = grad(i, j) + beta * SinTheirCode[i][j]
+    ch = 0
+    zn = 0
     for i in range(1, SX + 1):
         for j in range(1, SY + 1):
-            sum_of_grad = sum_of_grad + np.dot(cur_grad[i][j], cur_grad[i][j])
+            ch = ch + np.dot(grad(i,j), SinTheirCode[i][j])
+            zn = zn + np.dot(gradX(SinTheirCode, i, j), SinTheirCode[i][j])
 
-    omega = sum_of_grad / sum_of_prev_grad
-
+    alpha  = - ch/zn
     for i in range(1, SX + 1):
         for j in range(1, SY + 1):
-            g = grad(i,  j)
-            projGradOnS = np.dot(S[i][j], g)
-            g = g - projGradOnS * S[i][j]
-            maxNorm = np.maximum(maxNorm, np.linalg.norm(g))
-            if(k == 0):
-                prev_grad[i][j] = grad(i, j)
-                newS[i][j] = S[i][j] - step * (grad(i, j))
-            else:
-                newS[i][j] = S[i][j] - step * (grad(i, j)) + ( step * omega *  prev_grad[i][j] )
-                prev_grad[i][j] = grad(i, j) + prev_grad[i][j] * omega
-    S = newS
+            S[i][j] = S[i][j] - alpha * SinTheirCode[i][j]
     normalize()
-    print(E(),maxNorm)
-    k = k + 1
+    print(E())
 print(E())
 
 

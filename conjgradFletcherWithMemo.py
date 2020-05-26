@@ -4,8 +4,8 @@ import numpy as np
 # matrix_size = 16
 
 
-SX = 4
-SY = 5
+SX = 6
+SY = 6
 x = np.array([1.0, 0.0, 0.0])
 y = np.array([0.0, 1.0, 0.0])
 z = np.array([0.0, 0.0, 1.0])

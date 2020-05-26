@@ -4,7 +4,7 @@ import numpy as np
 # matrix_size = 16
 
 
-SX = 4
+SX = 5
 SY = 5
 x = np.array([1.0, 0.0, 0.0])
 y = np.array([0.0, 1.0, 0.0])
@@ -81,7 +81,7 @@ for i in range(1, SX + 1):
     for j in range(1, SY + 1):
         prev_grad[i][j] = grad(i, j)
 
-for k in range(0, 10000):
+for k in range(0, 300):
     newS = np.zeros_like(S)
     maxNorm = 0
     sum_of_prev_grad = 0
@@ -111,7 +111,7 @@ for k in range(0, 10000):
 
     S = newS
     normalize()
-    print(E(), maxNorm)
+    #print(E(), maxNorm)
 
 print(E())
 

@@ -4,7 +4,7 @@ import numpy as np
 
 
 SX = 4
-SY = 5
+SY = 4
 x = np.array([1.0, 0.0, 0.0])
 y = np.array([0.0, 1.0, 0.0])
 z = np.array([0.0, 0.0, 1.0])
@@ -95,7 +95,7 @@ for i in range(1, SX + 1):
         SinTheirCode[i][j] = grad(i, j)
 
 
-while(omega > 0.001):
+for p in range(0, 1000):
     ch = 0
     zn = 0
     for i in range(1, SX + 1):
@@ -115,10 +115,19 @@ while(omega > 0.001):
             zn = zn + np.dot(gradX(SinTheirCode, i, j), SinTheirCode[i][j])
 
     alpha  = - ch/zn
+
+    maxNorm =  0
     for i in range(1, SX + 1):
         for j in range(1, SY + 1):
+            ##
+            g = grad(i, j)
+            projGradOnS = np.dot(S[i][j], g)
+            g = g - projGradOnS * S[i][j]
+            maxNorm = np.maximum(maxNorm, np.linalg.norm(g))
+            ##
             S[i][j] = S[i][j] - alpha * SinTheirCode[i][j]
     normalize()
+    #print(maxNorm)
     print(E())
 print(E())
 

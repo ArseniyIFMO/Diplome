@@ -72,23 +72,30 @@ showstringspaces=false            %
 
     \newpage
     \section{Глава 1 Теоретическая часть работы}
-    Пусть наша магнитная система будет размера $p \times  q$. Тогда $n =  p * q$
-    Тогда энергия магнитной системы описывается как:\\
-    $E(S) = - \frac{1}{2}S^T*A*S + B*S$, где $A$ - матрица $n * n$, $B$ - матрица $1 * n$,
+    Пусть наша магнитная система будет размера $p \times  q$. Тогда $n =  p * q$.
+    Полная энергия магнитной системы состоит из:
+    Тогда энергия магнитной системы описывается как:
+    \begin{center}
+    $E(S) = - \frac{1}{2}S^T*A*S + B*S$,
+    \end{center}
+    где $A$ - матрица $n * n$, $B$ - матрица $1 \times n$,
     каждый элемент которой - трехмерный вектор $(x, y, z)$
-    А $S$ -- матрица $1*n$, каждый элемент которой - трехмерный вектор $S_i = (x, y, z)$ - вектор спина $i$-го скирмиона. \\
-        Эта матрица и описывает состояние магнитной системы.
-    Причем, требуется что бы норма каждого из векторов была равна $1$.
-    ($x^2 + y ^ 2 + z ^ 2 = 1, \|S_{i, j}\| = 1$)\\
+    , a $S$ -- матрица $1*n$, каждый элемент которой - трехмерный вектор $S_i = (x, y, z)$ - вектор магнитного момента $i$-го спина. \\
+    Матрица S и описывает состояние магнитной системы.
+    Причем, требуется что бы норма каждого из векторов была равна $1$.Иными словами, должно соблюдаться условие:\\
+     \begin{center}
+     $x^2 + y ^ 2 + z ^ 2 = 1, \|S_{i, j}\| = 1$\\
+    \end{center}
+    Полная энергия магнитной системы состоит из энергии обмена между соседними скирмионами в сетке,  антисимметричного обменного взаимодействия или взаимодействием Дзялошинского — Мория, а так же анизотропии.\\
     В нашей задаче:
     \begin{equation*}
     A = \left(
     \begin{array}{ccccс}
-    K*z*z^T & J + [D*x]_\times & 0  & \ldots & 0\\
-    J - [D*x]_\times & K*z*z^T & J + [D*x]_\times &\ldots & 0\\
-    0 & J - [D*x]_\times & K*z*z^T &\ldots & 0\\
+    Kzz^T & J + [Dx]_\times & 0  & \ldots & 0\\
+    J - [Dx]_\times & Kzz^T & J + [Dx]_\times &\ldots & 0\\
+    0 & J - [Dx]_\times & Kzz^T &\ldots & 0\\
     \vdots &\vdots &\vdots &\ddots & \vdots\\
-    0 & 0 &  0 &\ldots & K*z*z^T
+    0 & 0 &  0 &\ldots & Kzz^T
     \end{array}
     \right)
     \end{equation*}\\
@@ -97,39 +104,57 @@ showstringspaces=false            %
     \begin{array}{c}
     H_1\\
     H_2\\
+    H_3\\
     \vdots\\
     H_n
     \end{array}
     \right)
     \end{equation*}\\
-    То есть $A_{i, i} = -1,A_{i - 1, i} =  J + [D*x]_\times,
-    A_{i+1, i} =  J - [D*x]_\times,
-    A_{i + p, i} =  J + [D*y]_\times,
-    A_{i - p , i} =  J -  [D*x]_\times$, потому что если переводить исходную решетку в вектор, то взаимодействовать будут соседние в решетке.
+    То есть  \begin{center} $A_{i, i} = -1 \\ A_{i - 1, i} =  J + [D*x]_\times \\
+    A_{i+1, i} =  J - [D*x]_\times \\
+    A_{i + p, i} =  J + [D*y]_\times \\
+    A_{i - p , i} =  J -  [D*x]_\times$
+     \end{center}, потому что если переводить исходную решетку в вектор, то взаимодействовать будут соседние в решетке.
     В конечном итоге, нам требуется минимизировать данный функционал.\\
-    Записать энергию $E(S)$ можно тогда по другому.\\
+    Записать энергию $E(S)$ можно тогда по другому.
+    Согласно статье [1], энергия магнитной системы для модели Гизенберга записывается как:\\
     $x = (1,0, 0), y = (0,1, 0), z =(0, 0 , 1)$\\
-    $E(S) = \displaystyle{\sum_{i, j}} - J* (S_{i - 1, j} + S_{i + 1, j} + S_{i, j - 1} + S_{i, j + 1}) \cdot S_{i,j} + \\
-    D * (-S_{i - 1, j} \times x  + S_{i + 1, j} \times x - S_{i, j - 1} \times y - S_{i, j + 1} \times y)\cdot S_{i,j}
+        \begin{center}
+    $E(S) = \displaystyle{\sum_{i, j}} - J (S_{i - 1, j} + S_{i + 1, j} + S_{i, j - 1} + S_{i, j + 1}) \cdot S_{i,j} + \\
+    D  (-S_{i - 1, j} \times x  + S_{i + 1, j} \times x - S_{i, j - 1} \times y - S_{i, j + 1} \times y)\cdot S_{i,j}
     + \\
-    K * (z \cdot S_{i,j}) ^ 2$,\\
+    K  (z \cdot S_{i,j}) ^ 2$,\\
+    \end{center}[1]
     где
-    $\displaystyle{\sum_{i, j}} J* (S_{i - 1, j} + S_{i + 1, j} + S_{i, j - 1} + S_{i, j + 1}) \cdot S_{i,j}$ -- энергия обмена, а $D * (-S_{i - 1, j} \times x  + S_{i + 1, j} \times x - S_{i, j - 1} \times y - S_{i, j + 1} \times y)$  -- взаимодействие Джелошински - Мория, а - $K * (z \cdot S_{i,j}) ^ 2$ - анизотропия\\
+     \begin{center}
+    $\displaystyle{\sum_{i, j}} J* (S_{i - 1, j} + S_{i + 1, j} + S_{i, j - 1} + S_{i, j + 1}) \cdot S_{i,j}$\end{center} -- энергия обмена, а \begin{center}
+    $\displaystyle{\sum_{i, j}} D * (-S_{i - 1, j} \times x  + S_{i + 1, j} \times x - S_{i, j - 1} \times y - S_{i, j + 1} \times y)$\end{center}  -- взаимодействие Дзялошински - Мория, а - \begin{center}
+    $\displaystyle{\sum_{i, j}} K * (z \cdot S_{i,j}) ^ 2$\end{center} - энергия анизотропии\\
     Обычно, таки задачи решаются градиентным спуском, однако, в данной ситуации он не применим напрямую из за ограничений на норму спинов.
     Далее,мы рассмотрим несколько алгоритмов, которыми мы попытаемся решить данную задачу.
     \newpage
     \section{Методы решения}
     \subsection{Метод 1}
-    Первый метод которым можно воспользоваться  - градиентный спуск.\\
+    Первый метод которым можно воспользоваться  - градиентный спуск[2]. Градиент по скирмиону на позиции $i, j$ будет равен:
+      \begin{center}
     $\nabla E(S)_{i, j} = J * (S_{i + 1,j} + S_{i - 1,j} + S_{i, j + 1} + S_{i, j - 1})
-        + \\ D * ( (S_{i + 1,j} \times x) + (S_{i, j + 1} \times y) -  (S_{i - 1, j} \times x) - (S_{i, j - 1} \times y) )\\
+        + \\ D  ( (S_{i + 1,j} \times x) + (S_{i, j + 1} \times y) -  (S_{i - 1, j} \times x) - (S_{i, j - 1} \times y) )\\
         + 2 * z * K * (z \cdot S_{i, j})$\\
-    Будем  итерироваться как в градиентнтом спуске $S_{i, j} = S_{i, j} - \alpha * \nabla E(S)_{i, j}$.\\
+          \end{center}
+    Будем  итерироваться как в градиентнтом спуске:
+    \begin{center}
+    $S_{i, j} = S_{i, j} - \alpha * \nabla E(S)_{i, j}$.\\
+    \end{center}
     Однако, очевидно, после такого шага может  нарушится условие $\|S_{i, j}\| = 1$.\\
-    Тогда, будем действовать следующим образом. Сначала \\$S_{i, j} = S_{i, j} - \alpha * \nabla E(S)_{i, j}$, а потом отнормируем каждый элемент, то есть $S_{i, j} = \frac{S_{i, j}}{\|S_{i, j}\|}$.\\
+    Тогда, будем действовать следующим образом. Сначала \\
+    \begin{center}
+    $S_{i, j} = S_{i, j} - \alpha * \nabla E(S)_{i, j}$
+    \end{center}, а потом отнормируем каждый элемент, то есть \begin{center}$S_{i, j} = \frac{S_{i, j}}{\|S_{i, j}\|}$.\end{center}\\
     Тогда градиент с учетом нормировки будет равен:\\
-    $\Delta_{i, j} = \nabla S_{i, j} - \nabla S_{i, j} \cdot E(S)_{i, j} * S_{i, j}$\\
+    \begin{center}
+    $\Delta_{i, j} = \nabla E(S)_{i, j} - S_{i, j} \cdot \nabla E(S)_{i, j} * S_{i, j}$\\
     $\Delta = max(\Delta_{i, j}).$\\
+    \end{center}
     Собственно, норма этого градиента и будет условием остановки.\\
     ($\| \Delta \|< \varepsilon$)
     В этом варианте берется $\alpha = 0.001$, однако я далее проанализирую как меняется скороть сходимости  с различными $\alpha$
@@ -138,10 +163,11 @@ showstringspaces=false            %
 		\KwData{Входные данные}
 		\KwResult{Как прочитать книгу }
 		\alpha = 0.001;\\
+		$ \Delta  = 1$\\
 		\While{($ \Delta > \varepsilon$)}{
 		    $ \Delta  =0$\\
 		    \For{ i = 1 to n}{
-		        \For{ i = j to n}{
+		        \For{ j = 1 to n}{
 		            newS[i][j] = S[i][j] - \alpha * \nabla E(S)_{i,j}\\
 		            $\Delta = max(\Delta, \|\nabla S_{i, j} - \nabla S_{i, j} \cdot E(S)_{i, j} * S_{i, j}\|)$\\
 	            }
@@ -164,7 +190,7 @@ showstringspaces=false            %
 		     $\alpha  = \frac{\| \nabla S^k \|^2}{\| \nabla S^{k-1} \|^2}$\\
 		     $ \Delta  =0$\\
 		    \For{ i = 1 to n}{
-		        \For{ i = j to n}{
+		        \For{ j = 1 to n}{
 		            newS[i][j] = S[i][j] - \alpha * \nabla E(S)_{i,j}\\
 	                 $\Delta = max(\Delta, \|\nabla S_{i, j} - \nabla S_{i, j} \cdot E(S)_{i, j} * S_{i, j}\|)$\\
 	            }
@@ -176,9 +202,15 @@ showstringspaces=false            %
     \end{algorithm}
     \subsection{Метод 2.2}
     Воспользуемся методом сопряженных градиентов.\\
-    Сперва опробуем метод Флетчера - Риза
-    $S^k_{i, j} = S^{k-1}_{i, j} + \alpha * \Delta^k $, где $\Delta^k = -\nabla S_{i, j} + \omega * \Delta ^  {k-1} $,
-    $\omega  = \frac{\| \nabla S^k \|^2}{\| \nabla S^{k-1} \|^2}$\\
+    Сперва опробуем метод Флетчера - Риза[5]. В нем:
+    \begin{center}
+    $S^{(k + 1)}_{i, j} = S^{k}_{i, j} + \alpha_k * x_k $,\\
+    $x_0= \nabla E(S^0)$\\
+    $x_{k + 1}= \nabla E(S^k) + \beta ^ {k + 1} x_k$\\
+    $\beta ^{k +1} = \frac{ (\nabla E(x^k) \cdot \nabla E(S^k))} { (\nabla E(x^k) \cdot x^k)}$\\
+    $\alpha_k =\frac{\nabla E(S^k) \cdot x^k}{\nabla E(x^k) \cdot x^k}$
+
+    \end{center}
     Будем считать, что $\Delta^0=(0,0,0)$\\
 
     \begin{algorithm}[H]
@@ -189,7 +221,7 @@ showstringspaces=false            %
 		\While{$MyDelta > \varepsilon$}{
 		     $\omega  = \frac{\| \nabla S^k \|^2}{\| \nabla S^{k-1} \|^2}$\\
 		    \For{ i = 1 to n}{
-		        \For{ i = j to n}{
+		        \For{ j = 1 to n}{
 		             $\Delta^k = -\nabla S_{i, j} + \omega * \Delta ^  {k-1} $, \\
 		            newS[i][j] = S[i][j] - \alpha * \Delta^k \\
 		            $MyDelta = max( MyDelta, \|\nabla S_{i, j} - \nabla S_{i, j} \cdot E(S)_{i, j} * S_{i, j}\|)$\\
@@ -215,7 +247,7 @@ showstringspaces=false            %
     Практическая часть}
     \subsection{Метод 1}
     Приведу реализацию алгоритма на языке и сравним их быстродействие.
-    Для реализации данных алгоритмов испоьзуем язык Python, а так - же библиотеку numpy.Язык python и библиотека numpy  были выбранны как наиболее удобные
+    Для реализации данных алгоритмов испоьзуем язык Python, а так - же библиотеку numpy.Язык python и библиотека numpy  были выбранны как наиболее удобные[3][4]
     Реализация с фиксированным $\alpha$\\
 \begin{python}
     #Calculate gradient
@@ -320,18 +352,16 @@ print(E())
 \subsection{Метод 2}
  Приведу реализацию метода сопряженных градиентов Флетчера - Ривза
  \begin{python}
- import numpy as np
+import numpy as np
 
-#Define  x size of grid
+# matrix_size = 16
+
+
 SX = 4
-
-#Define y size of grid
-SY = 5
+SY = 4
 x = np.array([1.0, 0.0, 0.0])
 y = np.array([0.0, 1.0, 0.0])
 z = np.array([0.0, 0.0, 1.0])
-
-#Make random starting skirmions
 S = np.random.randn(SX + 2, SY + 2, 3)
 for i in range(0, SX + 2):
     S[i][0] = np.array([0, 0, 0])
@@ -341,18 +371,16 @@ for i in range(0, SY + 2):
     S[0][i] = np.array([0, 0, 0])
     S[SX + 1][i] = np.array([0, 0, 0])
 
- #Anisotropy constant
 K = 0.4
-
-#Exchange energy
 D = 0.35
-
-#Dzyaloshinskii-Moriya interaction
 J = 1
-
-#Length of step
 step = 0.1
 
+# print(S.shape)
+# np.roll
+# np.cross
+# alpha
+# steps = 1000
 def normalPrintS():
     for i in range(0, SX + 2):
         print()
@@ -360,23 +388,28 @@ def normalPrintS():
             print(S[i][j], end=" ")
     print()
 
-#Calculate gradient
+
 def grad(i, j):
-    tmp = J * (S[i + 1][j] + S[i - 1][j] +\\
-        S[i][j + 1] + S[i][j - 1])
-    tmp2 = D * (np.cross(S[i + 1][j], x) +
-    np.cross(S[i][j + 1], y) -
-    np.cross(S[i - 1][j], x) - np.cross(S[i][j - 1], y))
+    tmp = J * (S[i + 1][j] + S[i - 1][j] + S[i][j + 1] + S[i][j - 1])
+    tmp2 = D * (np.cross(S[i + 1][j], x) + np.cross(S[i][j + 1], y) - np.cross(S[i - 1][j], x) - np.cross(S[i][j - 1], y))
     tmp3 = 2 * z * K * np.dot(z, S[i][j]).item()
     res = - tmp + tmp2 - tmp3
     return res
 
-#Calculate energy
+def gradX(X, i, j):
+    tmp = J * (X[i + 1][j] + X[i - 1][j] + X[i][j + 1] + X[i][j - 1])
+    tmp2 = D * (np.cross(X[i + 1][j], x) + np.cross(X[i][j + 1], y) - np.cross(X[i - 1][j], x) - np.cross(X[i][j - 1], y))
+    tmp3 = 2 * z * K * np.dot(z, X[i][j]).item()
+    res = - tmp + tmp2 - tmp3
+    return res
+
+
+
 def E():
     res = 0
     for i in range(1, SX + 1):
         for j in range(1, SY + 1):
-            tmp = J * np.dot((S[i + 1][j] + S[i - 1][j] + S[i][j + 1] +\\ S[i][j - 1]), S[i][j])
+            tmp = J * np.dot((S[i + 1][j] + S[i - 1][j] + S[i][j + 1] + S[i][j - 1]), S[i][j])
             tmp2 = D * (+ np.dot(np.cross(S[i + 1][j], S[i][j]), x)
                         + np.dot(np.cross(S[i][j + 1], S[i][j]), y)
                         - np.dot(np.cross(S[i - 1][j], S[i][j]), x)
@@ -392,12 +425,10 @@ def E2():
             res += np.dot(S[i][j], grad(i,j))
     return res * 0.5
 
-#Normalise each vector
 def normalize():
     for i in range(1, SX + 1):
         for j in range(1, SY + 1):
-            norm = S[i][j][0] * S[i][j][0] + S[i][j][1] * S[i][j][1]
-            + S[i][j][2] * S[i][j][2]
+            norm = S[i][j][0] * S[i][j][0] + S[i][j][1] * S[i][j][1] + S[i][j][2] * S[i][j][2]
             norm = np.sqrt(norm)
             S[i][j][0] = S[i][j][0] / norm
             S[i][j][1] = S[i][j][1] / norm
@@ -405,60 +436,53 @@ def normalize():
 
 normalize()
 
-
 prev_grad =  np.random.randn(SX + 2, SY + 2, 3)
 cur_grad = np.random.randn(SX + 2, SY + 2, 3)
 for i in range(1, SX + 1):
     for j in range(1, SY + 1):
         prev_grad[i][j] = grad(i, j)
+omega = 1
+k = 0
+SinTheirCode = np.random.randn(SX + 2, SY + 2, 3)
+for i in range(1, SX + 1):
+    for j in range(1, SY + 1):
+        SinTheirCode[i][j] = grad(i, j)
 
-for k in range(0, 10000):
-    newS = np.zeros_like(S)
-    maxNorm = 0
-    sum_of_prev_grad = 0
-    sum_of_grad  =  0
 
-
+while(omega > 0.001):
+    ch = 0
+    zn = 0
     for i in range(1, SX + 1):
         for j in range(1, SY + 1):
-            sum_of_prev_grad = sum_of_prev_grad +
-            np.dot(prev_grad[i][j], prev_grad[i][j])
+            ch = ch + np.dot(grad(i,j), gradX(SinTheirCode, i, j))
+            zn = zn + np.dot(gradX(SinTheirCode, i, j), SinTheirCode[i][j])
 
+    beta = ch / zn
     for i in range(1, SX + 1):
         for j in range(1, SY + 1):
-            sum_of_grad = sum_of_grad +
-            np.dot(grad(i, j), grad(i, j))
-
-    omega = sum_of_grad / sum_of_prev_grad
-
+            SinTheirCode[i][j] = grad(i, j) + beta * SinTheirCode[i][j]
+    ch = 0
+    zn = 0
     for i in range(1, SX + 1):
         for j in range(1, SY + 1):
-            #Calculte gradient
-            g = grad(i,  j)
+            ch = ch + np.dot(grad(i,j), SinTheirCode[i][j])
+            zn = zn + np.dot(gradX(SinTheirCode, i, j), SinTheirCode[i][j])
 
-             #Calculate projection ofgradientto sphere
+    alpha  = - ch/zn
+
+    maxNorm =  0
+    for i in range(1, SX + 1):
+        for j in range(1, SY + 1):
+            ##
+            g = grad(i, j)
             projGradOnS = np.dot(S[i][j], g)
             g = g - projGradOnS * S[i][j]
             maxNorm = np.maximum(maxNorm, np.linalg.norm(g))
-            if(k == 0):
-                #Make step in gradient direction
-                prev_grad[i][j] = grad(i, j)
-                newS[i][j] = S[i][j] -
-                step * (grad(i, j))
-            else:
-                #Make step in gradient direction
-                newS[i][j] = S[i][j] - step * (grad(i, j))
-                + ( step * omega *  prev_grad[i][j] )
-                prev_grad[i][j] = grad(i, j) +
-                prev_grad[i][j] * omega
-    S = newS
-
-    #normalize all vectors
+            ##
+            S[i][j] = S[i][j] - alpha * SinTheirCode[i][j]
     normalize()
-
-
-#print minimal energy
 print(E())
+
  \end{python}
  заметим, что в этой реализации алгоритма многократно пересчитывается $\nabla S_{i, j}$. Тогда можно не каждый раз вычислять ее, а  просто сохранять значение в массиве, что определенно даст ускорение.
 
@@ -874,7 +898,7 @@ print(E())
     \section{Заключение}
     В данной работе мною была достигнута цель исследования, а именно выяснение наиболее оптимального метода решения этой задачи, приведен  код решения данных задач, проведен их анализ по времени работы.
     Как можно заметить, все перечисленные мною методы решают поставленную задачу, с той или иной скоростью. Соответственное, при решении данной задачи можно пользоваться любым из них.
-    В дальнейшем, можно постараться оптимизировать текущие агоритмы  путем выбора более подходящих $\alpha$, или использования координально других алгоритмов , например стохастических, что , возможно, даст прибавку в скорости, или попытаться каким то образомоптимизировать по памяти,снизив ее потребление.
+    В дальнейшем, можно постараться оптимизировать текущие агоритмы  путем выбора более подходящих $\alpha$, или использования координально других алгоритмов , например стохастических, что , возможно, даст прибавку в скорости, или попытаться каким то образом оптимизировать по памяти,снизив ее потребление.
 \newpage
 \section{Литература}
 1)Fast and Robust Algorithm for the Energy Minimization of Spin Systems Applied in
@@ -883,4 +907,5 @@ an Analysis of High Temperature Spin Configurations in Terms of Skyrmion Density
 МЕТОДЫ ОПТИМИЗАЦИИ\\
 3)https://numpy.org/doc/1.18/user/basics.types.html\\
 4)https://docs.python.org/3/download.html\\
+5)http://www.machinelearning.ru/wiki/index.php?title=Метод\_сопряжённых\_градиентов
 \end{document}

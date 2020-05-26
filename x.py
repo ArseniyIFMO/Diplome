@@ -3,8 +3,8 @@ import numpy as np
 # matrix_size = 16
 
 
-SX = 4
-SY = 5
+SX = 5
+SY =5
 x = np.array([1.0, 0.0, 0.0])
 y = np.array([0.0, 1.0, 0.0])
 z = np.array([0.0, 0.0, 1.0])
@@ -75,7 +75,7 @@ def normalize():
 normalize()
 
 
-for k in range(0, 10000):
+for k in range(0, 5000):
     newS = np.zeros_like(S)
     maxNorm = 0
     for i in range(1, SX + 1):
@@ -85,10 +85,10 @@ for k in range(0, 10000):
             g = g - projGradOnS * S[i][j]
             maxNorm = np.maximum(maxNorm, np.linalg.norm(g))
             newS[i][j] = S[i][j] - step * grad(i, j)
-
+    print(E(), maxNorm)
     S = newS
     normalize()
-    print(E(), maxNorm)
+print(E(), maxNorm)
 
 print(E())
 

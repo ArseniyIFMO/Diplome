@@ -3,7 +3,7 @@ import numpy as np
 # matrix_size = 16
 
 
-SX = 4
+SX = 5
 SY = 5
 x = np.array([1.0, 0.0, 0.0])
 y = np.array([0.0, 1.0, 0.0])

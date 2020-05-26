@@ -177,7 +177,7 @@ showstringspaces=false            %
 		}
 	\caption{Метод 1}
     \end{algorithm}
-    \subsection{Метод 2.1}
+    \subsection{Метод 2}
     Так же, я  отдельно попробую метод, в котором  $\alpha$ не постоянная, а каждый раз будет равна новому числу
      $\alpha  = \frac{\| \nabla S^k \|^2}{\| \nabla S^{k-1} \|^2}$.
     Сущетвует несколько способов задать критерий остановки: например, сделать фиксированное число итераций, либо делать итерации пока  ($\| \Delta \|> \varepsilon$)\\
@@ -200,19 +200,46 @@ showstringspaces=false            %
 		}
 	\caption{Метод 1}
     \end{algorithm}
-    \subsection{Метод 2.2}
+    \subsection{Метод 3}
     Воспользуемся методом сопряженных градиентов.\\
     Сперва опробуем метод Флетчера - Риза[5]. В нем:
     \begin{center}
-    $S^{(k + 1)}_{i, j} = S^{k}_{i, j} + \alpha_k * x_k $,\\
-    $x_0= \nabla E(S^0)$\\
+    $ x_0= \nabla E(S^0)\\
+    S^{(k + 1)}_{i, j} = S^{k}_{i, j} + \alpha_k * x_k $,\\
+     $\beta ^{k +1} = \frac{ (\nabla E(x^k) \cdot \nabla E(S^k))} { (\nabla E(x^k) \cdot x^k)}$\\
+    $\alpha_k =\frac{\nabla E(S^k) \cdot x^k}{\nabla E(x^k) \cdot x^k}$\\
     $x_{k + 1}= \nabla E(S^k) + \beta ^ {k + 1} x_k$\\
-    $\beta ^{k +1} = \frac{ (\nabla E(x^k) \cdot \nabla E(S^k))} { (\nabla E(x^k) \cdot x^k)}$\\
-    $\alpha_k =\frac{\nabla E(S^k) \cdot x^k}{\nabla E(x^k) \cdot x^k}$
-
+   .
     \end{center}
     Будем считать, что $\Delta^0=(0,0,0)$\\
 
+    \begin{algorithm}[H]
+		\SetAlgoLined
+		\KwData{Входные данные}
+		\KwResult{Как прочитать книгу }
+		\alpha = 0.001;\\
+		\While{$MyDelta > \varepsilon$}{
+		     $\omega  = \frac{\| \nabla S^k \|^2}{\| \nabla S^{k-1} \|^2}$\\
+		    \For{ i = 1 to n}{
+		        \For{ j = 1 to n}{
+		              S^{(k + 1)}_{i, j} = S^{k}_{i, j} + \alpha_k * x_k $,\\
+                      $\beta ^{k +1} = \frac{ (\nabla E(x^k) \cdot \nabla E(S^k))} { (\nabla E(x^k) \cdot x^k)}$\\
+                         $\alpha_k =\frac{\nabla E(S^k) \cdot x^k}{\nabla E(x^k) \cdot x^k}$\\
+                        $x_{k + 1}= \nabla E(S^k) + \beta ^ {k + 1} x_k$\\
+	            }
+	        }
+	        S = newS\\
+	        normalize(S)
+
+		}
+	\caption{Метод 1}
+    \end{algorithm}
+    \subsection{Метод 4}
+    Попробуем так - же метод, в котором направление шага на $k$ шаге зависит от направления градиента на $k - 1$ шаге\\
+      \begin{center}
+     $\Delta^k = -\nabla S_{i, j} + \omega * \Delta ^  {k-1} , \\
+		            newS[i][j] = S[i][j] - \alpha * \Delta^k $\\
+     \end{center}
     \begin{algorithm}[H]
 		\SetAlgoLined
 		\KwData{Входные данные}
@@ -233,14 +260,6 @@ showstringspaces=false            %
 		}
 	\caption{Метод 1}
     \end{algorithm}
-    \subsection{Метод 3}
-    Попробуем для решения данной задачи использовать метод второго порядка. Например, метод Ньютона.
-     $S^k_{i, j} = S^{k-1}_{i, j} - \nabla S^{k-1}_{i, j} H^{-1}(S)$, где $H$ - гессиан
-    \subsection{Метод 4}
-    Для дальнейшего ускорения можно использовать multigrid.
-    У градиентного спуска имеется некоторая начальная точка, она может быть довольно далека от оптимальной.
-    Что бы начинать в точке ближе к оптимальной и, соответственно, что бы алгоритм сходиля быстрее и  используется multigrid.\\
-    Алгоритм
     \newpage
     \section{
     Глава 2
@@ -349,7 +368,135 @@ showstringspaces=false            %
 
 print(E())
 \end{python}
-\subsection{Метод 2}
+ \subsection{Метод 2}
+ Можно попробоватьреализовать обычный градиентный спуск, но не с фиксированным $\alpha$, а с $\alpha = \frac{\| \nabla S^k \|^2}{\| \nabla S^{k-1} \|^2}$\\
+  \begin{python}
+#Define  x size of grid
+SX = 4
+#Define y size of grid
+SY = 5
+
+x = np.array([1.0, 0.0, 0.0])
+y = np.array([0.0, 1.0, 0.0])
+z = np.array([0.0, 0.0, 1.0])
+
+#Make random starting skirmions
+S = np.random.randn(SX + 2, SY + 2, 3)
+
+for i in range(0, SX + 2):
+    S[i][0] = np.array([0, 0, 0])
+    S[i][SY + 1] = np.array([0, 0, 0])
+
+for i in range(0, SY + 2):
+    S[0][i] = np.array([0, 0, 0])
+    S[SX + 1][i] = np.array([0, 0, 0])
+
+#Anisotropy constant
+K = 0.4
+
+#Exchange energy
+D = 0.35
+
+#Dzyaloshinskii-Moriya interaction
+J = 1
+
+#Length of step
+step = 0.1
+
+def normalPrintS():
+    for i in range(0, SX + 2):
+        print()
+        for j in range(0, SY + 2):
+            print(S[i][j], end=" ")
+    print()
+
+#Calculate gradient
+def grad(i, j):
+    tmp = J * (S[i + 1][j] + S[i - 1][j] + S[i][j + 1] + S[i][j - 1])
+    tmp2 = D * (np.cross(S[i + 1][j], x) + np.cross(S[i][j + 1], y) - np.cross(S[i - 1][j], x) - np.cross(S[i][j - 1], y))
+    tmp3 = 2 * z * K * np.dot(z, S[i][j]).item()
+    res = - tmp + tmp2 - tmp3
+    return res
+
+#Calculate energy
+def E():
+    res = 0
+    for i in range(1, SX + 1):
+        for j in range(1, SY + 1):
+            tmp = J * np.dot((S[i + 1][j] + S[i - 1][j] + S[i][j + 1] + S[i][j - 1]), S[i][j])
+            tmp2 = D * (+ np.dot(np.cross(S[i + 1][j], S[i][j]), x)
+                        + np.dot(np.cross(S[i][j + 1], S[i][j]), y)
+                        - np.dot(np.cross(S[i - 1][j], S[i][j]), x)
+                        - np.dot(np.cross(S[i][j - 1], S[i][j]), y))
+            tmp3 = K * (np.dot(z, S[i][j]) ** 2)
+            res = res - tmp / 2 - tmp2 / 2 - tmp3
+    return res
+
+#Calculate energy
+def E2():
+    res = 0
+    for i in range(1, SX + 1):
+        for j in range(1, SY + 1):
+            res += np.dot(S[i][j], grad(i,j))
+    return res * 0.5
+
+#Normalise each vector
+def normalize():
+    for i in range(1, SX + 1):
+        for j in range(1, SY + 1):
+            norm = S[i][j][0] * S[i][j][0] + S[i][j][1] * S[i][j][1] + S[i][j][2] * S[i][j][2]
+            norm = np.sqrt(norm)
+            S[i][j][0] = S[i][j][0] / norm
+            S[i][j][1] = S[i][j][1] / norm
+            S[i][j][2] = S[i][j][2] / norm
+
+normalize()
+
+prev_grad =  np.random.randn(SX + 2, SY + 2, 3)
+cur_grad = np.random.randn(SX + 2, SY + 2, 3)
+for i in range(1, SX + 1):
+    for j in range(1, SY + 1):
+        prev_grad[i][j] = grad(i, j)
+
+for k in range(0, 10000):
+    newS = np.zeros_like(S)
+    maxNorm = 0
+    sum_of_prev_grad = 0
+    sum_of_grad  =  0
+    for i in range(1, SX + 1):
+        for j in range(1, SY + 1):
+            cur_grad[i][j] = grad(i,  j)
+
+    for i in range(1, SX + 1):
+        for j in range(1, SY + 1):
+            sum_of_prev_grad = sum_of_prev_grad + np.dot(prev_grad[i][j], prev_grad[i][j])
+
+    for i in range(1, SX + 1):
+        for j in range(1, SY + 1):
+            sum_of_grad = sum_of_grad + np.dot(cur_grad[i][j], cur_grad[i][j])
+
+    alpha = sum_of_grad / sum_of_prev_grad
+
+    for i in range(1, SX + 1):
+        for j in range(1, SY + 1):
+            #Calculte gradient
+            g = grad(i,  j)
+
+            #Calculate projection ofgradientto sphere
+            projGradOnS = np.dot(S[i][j], g)
+            g = g - projGradOnS * S[i][j]
+            maxNorm = np.maximum(maxNorm, np.linalg.norm(g))
+            prev_grad[i][j] =grad(i, j)
+            #Make step in gradient direction
+            newS[i][j] = S[i][j] - alpha * grad(i, j)
+
+    S = newS
+    normalize()
+
+print(E())
+
+ \end{python}
+\subsection{Метод 3}
  Приведу реализацию метода сопряженных градиентов Флетчера - Ривза
  \begin{python}
 import numpy as np
@@ -484,24 +631,17 @@ while(omega > 0.001):
 print(E())
 
  \end{python}
- заметим, что в этой реализации алгоритма многократно пересчитывается $\nabla S_{i, j}$. Тогда можно не каждый раз вычислять ее, а  просто сохранять значение в массиве, что определенно даст ускорение.
 
+\subsection{Метод 4}
 
  \begin{python}
- import numpy as np
 
-#Define  x size of grid
-SX = 4
-
-#Define y size of grid
+SX = 5
 SY = 5
 x = np.array([1.0, 0.0, 0.0])
 y = np.array([0.0, 1.0, 0.0])
 z = np.array([0.0, 0.0, 1.0])
-
-#Make random starting skirmions
 S = np.random.randn(SX + 2, SY + 2, 3)
-
 for i in range(0, SX + 2):
     S[i][0] = np.array([0, 0, 0])
     S[i][SY + 1] = np.array([0, 0, 0])
@@ -510,18 +650,16 @@ for i in range(0, SY + 2):
     S[0][i] = np.array([0, 0, 0])
     S[SX + 1][i] = np.array([0, 0, 0])
 
-#Anisotropy constant
 K = 0.4
-
-#Exchange energy
 D = 0.35
-
-#Dzyaloshinskii-Moriya interaction
 J = 1
-
-#Length of step
 step = 0.1
 
+# print(S.shape)
+# np.roll
+# np.cross
+# alpha
+# steps = 1000
 def normalPrintS():
     for i in range(0, SX + 2):
         print()
@@ -529,148 +667,7 @@ def normalPrintS():
             print(S[i][j], end=" ")
     print()
 
-#Calculate gradient
-def grad(i, j):
-    tmp = J * (S[i + 1][j] + S[i - 1][j] +
-        S[i][j + 1] + S[i][j - 1])
-    tmp2 = D * (np.cross(S[i + 1][j], x) +
-    np.cross(S[i][j + 1], y) -
-    np.cross(S[i - 1][j], x) - np.cross(S[i][j - 1], y))
-    tmp3 = 2 * z * K * np.dot(z, S[i][j]).item()
-    res = - tmp + tmp2 - tmp3
-    return res
 
-#Calculate energy
-def E():
-    res = 0
-    for i in range(1, SX + 1):
-        for j in range(1, SY + 1):
-            tmp = J * np.dot((S[i + 1][j] + S[i - 1][j] + S[i][j + 1] + S[i][j - 1]), S[i][j])
-            tmp2 = D * (+ np.dot(np.cross(S[i + 1][j], S[i][j]), x)
-                        + np.dot(np.cross(S[i][j + 1], S[i][j]), y)
-                        - np.dot(np.cross(S[i - 1][j], S[i][j]), x)
-                        - np.dot(np.cross(S[i][j - 1], S[i][j]), y))
-            tmp3 = K * (np.dot(z, S[i][j]) ** 2)
-            res = res - tmp / 2 - tmp2 / 2 - tmp3
-    return res
-
-def E2():
-    res = 0
-    for i in range(1, SX + 1):
-        for j in range(1, SY + 1):
-            res += np.dot(S[i][j], grad(i,j))
-    return res * 0.5
-
-#Normalise each vector
-def normalize():
-    for i in range(1, SX + 1):
-        for j in range(1, SY + 1):
-            norm = S[i][j][0] * S[i][j][0] + S[i][j][1] * S[i][j][1]
-            + S[i][j][2] * S[i][j][2]
-            norm = np.sqrt(norm)
-            S[i][j][0] = S[i][j][0] / norm
-            S[i][j][1] = S[i][j][1] / norm
-            S[i][j][2] = S[i][j][2] / norm
-
-normalize()
-
-prev_grad =  np.random.randn(SX + 2, SY + 2, 3)
-cur_grad = np.random.randn(SX + 2, SY + 2, 3)
-for i in range(1, SX + 1):
-    for j in range(1, SY + 1):
-        prev_grad[i][j] = grad(i, j)
-
-for i in range(1, SX + 1):
-    for j in range(1, SY + 1):
-        cur_grad[i][j] = grad(i,  j)
-
-
-for k in range(0, 10000):
-    newS = np.zeros_like(S)
-    maxNorm = 0
-    sum_of_prev_grad = 0
-    sum_of_grad  =  0
-
-
-    for i in range(1, SX + 1):
-        for j in range(1, SY + 1):
-            sum_of_prev_grad = sum_of_prev_grad +
-            np.dot(prev_grad[i][j], prev_grad[i][j])
-
-    for i in range(1, SX + 1):
-        for j in range(1, SY + 1):
-            sum_of_grad = sum_of_grad +
-            np.dot( cur_grad[i][j] ,  cur_grad[i][j] )
-
-    omega = sum_of_grad / sum_of_prev_grad
-
-    for i in range(1, SX + 1):
-        for j in range(1, SY + 1):
-            #Calculte gradient
-            g = grad(i,  j)
-            projGradOnS = np.dot(S[i][j], g)
-            g = g - projGradOnS * S[i][j]
-            maxNorm = np.maximum(maxNorm, np.linalg.norm(g))
-            if(k == 0):
-                prev_grad[i][j] = grad(i, j)
-                #Make step in gradient direction
-                newS[i][j] = S[i][j] -
-                step * (grad(i, j))
-            else:
-                #Make step in gradient direction
-                newS[i][j] = S[i][j] - step * ( cur_grad[i][j] )
-                + ( step * omega *  prev_grad[i][j] )
-                prev_grad[i][j] =  cur_grad[i][j]  +
-                prev_grad[i][j] * omega
-    S = newS
-    normalize()
-
-#print minimal energy
-print(E())
- \end{python}
- \subsection{Метод 2.1}
- Можно попробоватьреализовать обычный градиентный спуск, но не с фиксированным $\alpha$, а с $\alpha = \frac{\| \nabla S^k \|^2}{\| \nabla S^{k-1} \|^2}$\\
-  \begin{python}
-#Define  x size of grid
-SX = 4
-#Define y size of grid
-SY = 5
-
-x = np.array([1.0, 0.0, 0.0])
-y = np.array([0.0, 1.0, 0.0])
-z = np.array([0.0, 0.0, 1.0])
-
-#Make random starting skirmions
-S = np.random.randn(SX + 2, SY + 2, 3)
-
-for i in range(0, SX + 2):
-    S[i][0] = np.array([0, 0, 0])
-    S[i][SY + 1] = np.array([0, 0, 0])
-
-for i in range(0, SY + 2):
-    S[0][i] = np.array([0, 0, 0])
-    S[SX + 1][i] = np.array([0, 0, 0])
-
-#Anisotropy constant
-K = 0.4
-
-#Exchange energy
-D = 0.35
-
-#Dzyaloshinskii-Moriya interaction
-J = 1
-
-#Length of step
-step = 0.1
-
-def normalPrintS():
-    for i in range(0, SX + 2):
-        print()
-        for j in range(0, SY + 2):
-            print(S[i][j], end=" ")
-    print()
-
-#Calculate gradient
 def grad(i, j):
     tmp = J * (S[i + 1][j] + S[i - 1][j] + S[i][j + 1] + S[i][j - 1])
     tmp2 = D * (np.cross(S[i + 1][j], x) + np.cross(S[i][j + 1], y) - np.cross(S[i - 1][j], x) - np.cross(S[i][j - 1], y))
@@ -678,7 +675,7 @@ def grad(i, j):
     res = - tmp + tmp2 - tmp3
     return res
 
-#Calculate energy
+
 def E():
     res = 0
     for i in range(1, SX + 1):
@@ -692,7 +689,6 @@ def E():
             res = res - tmp / 2 - tmp2 / 2 - tmp3
     return res
 
-#Calculate energy
 def E2():
     res = 0
     for i in range(1, SX + 1):
@@ -700,7 +696,6 @@ def E2():
             res += np.dot(S[i][j], grad(i,j))
     return res * 0.5
 
-#Normalise each vector
 def normalize():
     for i in range(1, SX + 1):
         for j in range(1, SY + 1):
@@ -717,8 +712,9 @@ cur_grad = np.random.randn(SX + 2, SY + 2, 3)
 for i in range(1, SX + 1):
     for j in range(1, SY + 1):
         prev_grad[i][j] = grad(i, j)
-
-for k in range(0, 10000):
+omega = 1
+k = 0
+while(omega > 0.001):
     newS = np.zeros_like(S)
     maxNorm = 0
     sum_of_prev_grad = 0
@@ -735,32 +731,28 @@ for k in range(0, 10000):
         for j in range(1, SY + 1):
             sum_of_grad = sum_of_grad + np.dot(cur_grad[i][j], cur_grad[i][j])
 
-    alpha = sum_of_grad / sum_of_prev_grad
+    omega = sum_of_grad / sum_of_prev_grad
 
     for i in range(1, SX + 1):
         for j in range(1, SY + 1):
-            #Calculte gradient
             g = grad(i,  j)
-
-            #Calculate projection ofgradientto sphere
             projGradOnS = np.dot(S[i][j], g)
             g = g - projGradOnS * S[i][j]
             maxNorm = np.maximum(maxNorm, np.linalg.norm(g))
-            prev_grad[i][j] =grad(i, j)
-            #Make step in gradient direction
-            newS[i][j] = S[i][j] - alpha * grad(i, j)
-
+            if(k == 0):
+                prev_grad[i][j] = grad(i, j)
+                newS[i][j] = S[i][j] - step * (grad(i, j))
+            else:
+                newS[i][j] = S[i][j] - step * (grad(i, j)) + ( step * omega *  prev_grad[i][j] )
+                prev_grad[i][j] = grad(i, j) + prev_grad[i][j] * omega
     S = newS
     normalize()
-
+    print(E(),maxNorm)
+    k = k + 1
 print(E())
 
  \end{python}
- \subsection{Метод 2. Версия с распаралеливанием}
- Зачастую, компьютеры имеют не одно,а много ядер процессора, а нашалгоритм задействует всего лишь один  поток. Соответственно, для дальнейшего ускорения возможно распаралелить наш алгоритм.
- Так как направления шага для кажого спина независимы, то можно делать шаги для каждого из спинов в своем потоке.
-  \begin{python}
-  \end{python}
+
 \newpage
 \section{Глава 3\\
 Сравнение быстродействия методов}

@@ -90,7 +90,7 @@ omega = 1
 k = 0
 maxNorm =  100
 t1 = process_time()
-while(maxNorm > 0.00001):
+while(maxNorm > 0.0001):
     newS = np.zeros_like(S)
     maxNorm = 0
     sum_of_prev_grad = 0
@@ -121,7 +121,7 @@ while(maxNorm > 0.00001):
                 prev_grad[i][j] = grad(i, j)
                 newS[i][j] = S[i][j] - step * (grad(i, j))
             else:
-                newS[i][j] = (S[i][j] - step * (grad(i, j)) +
+                newS[i][j] = (S[i][j] - step * (grad(i, j)) -
                               ( step * omega *  prev_grad[i][j] ))
                 prev_grad[i][j] = (
                     grad(i, j) + prev_grad[i][j] * omega)
@@ -131,8 +131,8 @@ while(maxNorm > 0.00001):
     k = k + 1
 t2 = process_time()
 #print(E(), maxNorm)
+print(k)
 print(t2 - t1)
-print(E())
 
 
 

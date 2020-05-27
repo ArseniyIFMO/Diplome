@@ -58,6 +58,7 @@ showstringspaces=false            %
     \clearpage
     \section{Введение}    \noindent
     В данной работе мы будем искать метастабильные состояния магнитной системы\\
+    Одной из перспективных систем хранения информации будующего являются спиновые системы.
     Характеризация магнитных материалов начинается с  поиска метастабильного состояния системы.
     В данной работе будет решаться задача поиска такого состояния.\\
         Метастабильное состояние - это состояние системы, в котором энергия минимальна, и, соответственно, в работе требуется находить минимальную энергию некоторой магнитной системы.\\
@@ -113,7 +114,7 @@ showstringspaces=false            %
     То есть  \begin{center} $A_{i, i} = -1 \\ A_{i - 1, i} =  J + [D*x]_\times \\
     A_{i+1, i} =  J - [D*x]_\times \\
     A_{i + p, i} =  J + [D*y]_\times \\
-    A_{i - p , i} =  J -  [D*x]_\times$
+    A_{i - p , i} =  J -  [D*y]_\times$
      \end{center}, потому что если переводить исходную решетку в вектор, то взаимодействовать будут соседние в решетке.
     В конечном итоге, нам требуется минимизировать данный функционал.\\
     Записать энергию $E(S)$ можно тогда по другому.
@@ -130,6 +131,7 @@ showstringspaces=false            %
     $\displaystyle{\sum_{i, j}} J* (S_{i - 1, j} + S_{i + 1, j} + S_{i, j - 1} + S_{i, j + 1}) \cdot S_{i,j}$\end{center} -- энергия обмена, а \begin{center}
     $\displaystyle{\sum_{i, j}} D * (-S_{i - 1, j} \times x  + S_{i + 1, j} \times x - S_{i, j - 1} \times y + S_{i, j + 1} \times y)\cdot S_{i,j}$\end{center}  -- взаимодействие Дзялошински - Мория, а - \begin{center}
     $\displaystyle{\sum_{i, j}} K * (z \cdot S_{i,j}) ^ 2$\end{center} - энергия анизотропии\\
+    В нашем случае $K = 0.4$, $D = 0.35$, $J = 1$\\
     Обычно, задачи минимизации решаются градиентным спуском, однако, в данной ситуации он не применим напрямую из за ограничений на норму спинов.
     Далее,мы рассмотрим несколько алгоритмов, которыми мы попытаемся решить данную задачу.
     \newpage
@@ -156,12 +158,18 @@ showstringspaces=false            %
     $\Delta = max(\Delta_{i, j}).$\\
     \end{center}
     Собственно, норма этого градиента и будет условием остановки.\\
-    ($\| \Delta \|< \varepsilon$)
-    В этом варианте берется $\alpha = 0.001$, однако я далее проанализирую как меняется скороть сходимости  с различными $\alpha$
+    ($\| \Delta \|< \varepsilon$)\\
+    Существует так же и другой варианту условия остановки цикла:\\
+    \begin{center}
+    $ | E(S^k) - E(S^{k-1}) | < \varepsilon$
+     \end{center}\\
+     , где $S^k$ -- состояние $S$ на шаге $k$, а $S^{k-1}$ на шаге $k-1$.\\
+     То есть ограничения накладываются на изменение самой энергии, пока оно не станет достаточно маленьким.\\
+    В этом варианте берется $\alpha = 0.001$, однако я далее проанализирую как меняется скороть сходимости  с различными $\alpha$\\
     \begin{algorithm}[H]
 		\SetAlgoLined
-		\KwData{Входные данные}
-		\KwResult{Как прочитать книгу }
+		\KwData{Случайное состояние}
+		\KwResult{Состояние с минимальной энергией}
 		\alpha = 0.001;\\
 		$ \Delta  = 1$\\
 		\While{($ \Delta > \varepsilon$)}{
@@ -169,7 +177,7 @@ showstringspaces=false            %
 		    \For{ i = 1 to n}{
 		        \For{ j = 1 to n}{
 		            newS[i][j] = S[i][j] - \alpha * \nabla E(S)_{i,j}\\
-		            $\Delta = max(\Delta, \| \nabla E(S)_{i, j} - S_{i, j} \cdot \nabla E(S)_{i, j} * S_{i, j})$\\
+		            $\Delta = max(\Delta, \| \nabla E(S)_{i, j} - S_{i, j} \cdot \nabla E(S)_{i, j} * S_{i, j}\| )$\\
 	            }
 	        }
 	        S = newS\\
@@ -184,8 +192,8 @@ showstringspaces=false            %
     Существует несколько способов задать критерий остановки: например, сделать фиксированное число итераций, либо делать итерации пока  ($\| \Delta \|> \varepsilon$)\\
     \begin{algorithm}[H]
 		\SetAlgoLined
-		\KwData{Входные данные}
-		\KwResult{Как прочитать книгу }
+		\KwData{Случайное состояние}
+		\KwResult{Состояние с минимальной энергией}
 		\alpha = 0.001;\\
 		$ \Delta  = 1$\\
 		\While{$\Delta > \varepsilon$}{
@@ -194,7 +202,7 @@ showstringspaces=false            %
 		    \For{ i = 1 to n}{
 		        \For{ j = 1 to n}{
 		            newS[i][j] = S[i][j] - \alpha * \nabla E(S)_{i,j}\\
-	                 $\Delta = max(\Delta, \|\nabla S_{i, j} - \nabla S_{i, j} \cdot E(S)_{i, j} * S_{i, j}\|)$\\
+	                 $\Delta = max(\Delta,\nabla E(S)_{i, j} - S_{i, j} \cdot \nabla E(S)_{i, j} * S_{i, j})$\\
 	            }
 	        }
 	        S = newS\\
@@ -204,7 +212,7 @@ showstringspaces=false            %
     \end{algorithm}
     \subsection{Метод 3}
     Воспользуемся методом сопряженных градиентов.\\
-    Сперва опробуем метод Флетчера - Риза[5].
+    Сперва опробуем метод Флетчера - Риза[5][6].
     Так как матрица $A$ симметрическая и положительно определена, этот метод работает.
     В нем:
     \begin{center}
@@ -219,8 +227,8 @@ showstringspaces=false            %
 
     \begin{algorithm}[H]
 		\SetAlgoLined
-		\KwData{Входные данные}
-		\KwResult{Как прочитать книгу }
+		\KwData{Случайное состояние}
+		\KwResult{Состояние с минимальной энергией}
 		\alpha = 0.001;\\
 		$ \Delta  = 1$\\
 		\While{$MyDelta > \varepsilon$}{
@@ -241,14 +249,16 @@ showstringspaces=false            %
     \end{algorithm}
     \subsection{Метод 4}
     Попробуем так - же метод, в котором направление шага на $k$ шаге зависит от направления градиента на $k - 1$ шаге\\
+    Такой вид градиентного спуска называется инерционным и описан в работе [7].
+    \\
       \begin{center}
      $\Delta^k = -\nabla S_{i, j} + \omega * \Delta ^  {k-1} , \\
 		            newS[i][j] = S[i][j] - \alpha * \Delta^k $\\
      \end{center}
     \begin{algorithm}[H]
 		\SetAlgoLined
-		\KwData{Входные данные}
-		\KwResult{Как прочитать книгу }
+		\KwData{Случайное состояние}
+		\KwResult{Состояние с минимальной энергией}
 		\alpha = 0.001;\\
 		$ \Delta  = 1$\\
 		\While{$MyDelta > \varepsilon$}{
@@ -257,7 +267,7 @@ showstringspaces=false            %
 		        \For{ j = 1 to n}{
 		             $\Delta^k = -\nabla S_{i, j} + \omega * \Delta ^  {k-1} $, \\
 		            newS[i][j] = S[i][j] - \alpha * \Delta^k \\
-		            $MyDelta = max( MyDelta, \|\nabla S_{i, j} - \nabla S_{i, j} \cdot E(S)_{i, j} * S_{i, j}\|)$\\
+		            $MyDelta = max( MyDelta, \nabla E(S)_{i, j} - S_{i, j} \cdot \nabla E(S)_{i, j} * S_{i, j})$\\
 	            }
 	        }
 	        S = newS\\
@@ -648,12 +658,7 @@ while(abs(endEnergy - initEnergy) > 0.000001):
     maxNorm =  0
     for i in range(1, SX + 1):
         for j in range(1, SY + 1):
-            ##
-            g = grad(i, j)
-            projGradOnS = np.dot(S[i][j], g)
-            g = g - projGradOnS * S[i][j]
-            maxNorm = np.maximum(maxNorm, np.linalg.norm(g))
-            ##
+            #Make step
             S[i][j] = S[i][j] - alpha * SinTheirCode[i][j]
     normalize()
     endEnergy = E()
@@ -684,11 +689,6 @@ D = 0.35
 J = 1
 step = 0.1
 
-# print(S.shape)
-# np.roll
-# np.cross
-# alpha
-# steps = 1000
 def normalPrintS():
     for i in range(0, SX + 2):
         print()
@@ -785,13 +785,14 @@ while(maxNorm > 0.001):
                 prev_grad[i][j] = grad(i, j)
                 newS[i][j] = S[i][j] - step * (grad(i, j))
             else:
-                newS[i][j] = (S[i][j] - step * (grad(i, j)) +
+                newS[i][j] = (S[i][j] - step * (grad(i, j)) -
                              ( step * omega *  prev_grad[i][j]))
                 prev_grad[i][j] = (
                     grad(i, j) + prev_grad[i][j] * omega)
     S = newS
     normalize()
-    print(E(),maxNorm)
+    cur_energy = E()
+    maxNorm = abs(cur_energy - energy)
     k = k + 1
 print(E())
 
@@ -914,6 +915,96 @@ $\nabla > 0.001 $
  n = 6 & 10.21   & 5.8      & 26.0 & 31.0 \\
 \end{tabular}
 \end{center}
+Теперь проведем сравнительный анализ времени сходимости для другого $\Delta$
+ Сравним быстродействие данных методов для различных размеров систем и различных  ($\| \Delta \|< \varepsilon$).\\
+ \begin{tikzpicture}
+\begin{axis}[
+    title={Метод 1},
+    xlabel={N},
+   ylabel={time, c},
+    xmin=3, xmax=10,
+    ymin=0, ymax=120,
+    xtick={4,5,6,7,8},
+    ytick={0,20,40,60,80,100,120},
+    legend pos=north west,
+    ymajorgrids=true,
+    grid style=dashed,
+]
+
+\addplot[
+    color=blue,
+    mark=square,
+    ]
+    coordinates {
+    (0,23.1)(10,27.5)(20,32)(30,37.8)(40,44.6)(60,61.8)(80,83.8)(100,114)
+    };
+    \legend{Время работы для разных $n$}
+
+\end{axis}
+\end{tikzpicture}\\
+ \begin{tikzpicture}
+\begin{axis}[
+    title={Метод 2},
+    xlabel={N},
+    ylabel={time, c},
+    xmin=3, xmax=10,
+    ymin=0, ymax=120,
+    xtick={4,5,6,7,8},
+    ytick={0,20,40,60,80,100,120},
+    legend pos=north west,
+    ymajorgrids=true,
+    grid style=dashed,
+]
+
+\addplot[
+    color=blue,
+    mark=square,
+    ]
+    coordinates {
+    (0,23.1)(10,27.5)(20,32)(30,37.8)(40,44.6)(60,61.8)(80,83.8)(100,114)
+    };
+    \legend{Время работы для разных $n$}
+
+\end{axis}
+\end{tikzpicture}\\
+
+ \begin{tikzpicture}
+ \begin{axis}[
+    title={Метод 3},
+    xlabel={N},
+    ylabel={time, c},
+    xmin=3, xmax=10,
+    ymin=0, ymax=120,
+    xtick={4,5,6,7,8},
+    ytick={0,20,40,60,80,100,120},
+    legend pos=north west,
+    ymajorgrids=true,
+    grid style=dashed,
+]
+
+\addplot[
+    color=blue,
+    mark=square,
+    ]
+    coordinates {
+    (0,23.1)(10,27.5)(20,32)(30,37.8)(40,44.6)(60,61.8)(80,83.8)(100,114)
+    };
+    \legend{Время работы для разных $n$}
+
+\end{axis}
+\end{tikzpicture}\\
+Сравнителььная  таблица
+$\nabla > 0.001 $
+\begin{center}
+\begin{tabular}{ c c c c c}
+       & метод 1 & метод 2 & метод 3 ХЗ & метод 4 \\
+ n = 2 & 0.74    & 0.45     & 1.15 & 2.15 \\
+ n = 3 & 1.48    & 0.9      & 3.5 & 5.81 \\
+ n = 4 & 3.18    & 1.8      & 5.8 & 10.07 \\
+ n = 5 & 6.83    & 3.0      & 18.7 & 15.6 \\
+ n = 6 & 10.21   & 5.8      & 26.0 & 31.0 \\
+\end{tabular}
+\end{center}
 Исходя из показанных сверху граифков, можно заключить что самым оптимальным методом является метод      , а остальные не такими оптимальными.
 Однако, расход памяти  разных алгоритмах тоже разнится.
  \newpage
@@ -927,7 +1018,11 @@ $\nabla > 0.001 $
 an Analysis of High Temperature Spin Configurations in Terms of Skyrmion Density, Aleksei V. Ivanov,1, 2, ∗ Valery M. Uzdin,2, 3 and Hannes J´onsson\\
 2)М.Э.АББАСОВ
 МЕТОДЫ ОПТИМИЗАЦИИ\\
-3)https://numpy.org/doc/1.18/user/basics.types.html\\
-4)https://docs.python.org/3/download.html\\
-5)http://www.machinelearning.ru/wiki/index.php?title=Метод\_сопряжённых\_градиентов
+3)https://numpy.org/doc/1.18/user/basics.types.html (дата обращения: 17.04.07).\\
+4)https://docs.python.org/3/download.html (дата обращения: 17.04.07).\\
+5)http://www.machinelearning.ru/wiki/index.php?title=\\
+Метод\_сопряжённых\_градиентов (дата обращения: 17.04.07).\\
+6)http://w.ict.nsc.ru/books/textbooks/akhmerov/mo/5.html\\
+(дата обращения: 17.04.07).\\
+7)  А. В. Назин, “Алгоритмы инерционного зеркального спуска в выпуклых задачах стохастической оптимизации”, Автомат. и телемех., 2018, № 1, 100–112; Autom. Remote Control, 79:1 (2018), 78–88
 \end{document}

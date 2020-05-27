@@ -5,8 +5,8 @@ import numpy as np
 # matrix_size = 16
 
 
-SX = 6
-SY = 6
+SX = 7
+SY = 7
 x = np.array([1.0, 0.0, 0.0])
 y = np.array([0.0, 1.0, 0.0])
 z = np.array([0.0, 0.0, 1.0])
@@ -89,7 +89,7 @@ for i in range(1, SX + 1):
 
 maxNorm = 10
 t1 = process_time()
-while(maxNorm > 0.00001):
+while(maxNorm > 0.0001):
     newS = np.zeros_like(S)
     maxNorm = 0
     sum_of_prev_grad = 0
@@ -121,7 +121,7 @@ while(maxNorm > 0.00001):
 
     S = newS
     normalize()
-    #print(E(), maxNorm)
+    print(E(), E2())
 t2 = process_time()
 print(t2 - t1)
 print(E())

@@ -38,7 +38,10 @@ def normalPrintS():
 
 def grad(i, j):
     tmp = J * (S[i + 1][j] + S[i - 1][j] + S[i][j + 1] + S[i][j - 1])
-    tmp2 = D * (np.cross(S[i + 1][j], x) + np.cross(S[i][j + 1], y) - np.cross(S[i - 1][j], x) - np.cross(S[i][j - 1], y))
+    tmp2 = D * (np.cross(S[i + 1][j], x) +
+                np.cross(S[i][j + 1], y) -
+                np.cross(S[i - 1][j], x) -
+                np.cross(S[i][j - 1], y))
     tmp3 = 2 * z * K * np.dot(z, S[i][j]).item()
     res = - tmp + tmp2 - tmp3
     return res
@@ -67,7 +70,9 @@ def E2():
 def normalize():
     for i in range(1, SX + 1):
         for j in range(1, SY + 1):
-            norm = S[i][j][0] * S[i][j][0] + S[i][j][1] * S[i][j][1] + S[i][j][2] * S[i][j][2]
+            norm = (S[i][j][0] * S[i][j][0] +
+                    S[i][j][1] * S[i][j][1] +
+                    S[i][j][2] * S[i][j][2])
             norm = np.sqrt(norm)
             S[i][j][0] = S[i][j][0] / norm
             S[i][j][1] = S[i][j][1] / norm
@@ -81,7 +86,8 @@ for i in range(1, SX + 1):
     for j in range(1, SY + 1):
         prev_grad[i][j] = grad(i, j)
 
-for k in range(0, 300):
+maxNorm = 10
+while(maxNorm > 0.00001):
     newS = np.zeros_like(S)
     maxNorm = 0
     sum_of_prev_grad = 0
@@ -92,11 +98,13 @@ for k in range(0, 300):
 
     for i in range(1, SX + 1):
         for j in range(1, SY + 1):
-            sum_of_prev_grad = sum_of_prev_grad + np.dot(prev_grad[i][j], prev_grad[i][j])
+            sum_of_prev_grad = (sum_of_prev_grad +
+                                np.dot(prev_grad[i][j], prev_grad[i][j]))
 
     for i in range(1, SX + 1):
         for j in range(1, SY + 1):
-            sum_of_grad = sum_of_grad + np.dot(cur_grad[i][j], cur_grad[i][j])
+            sum_of_grad = (sum_of_grad
+                           + np.dot(cur_grad[i][j], cur_grad[i][j]))
 
     alpha = sum_of_grad / sum_of_prev_grad
 

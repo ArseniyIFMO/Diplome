@@ -3,8 +3,8 @@ import numpy as np
 # matrix_size = 16
 
 
-SX = 5
-SY =5
+SX = 4
+SY = 4
 x = np.array([1.0, 0.0, 0.0])
 y = np.array([0.0, 1.0, 0.0])
 z = np.array([0.0, 0.0, 1.0])
@@ -74,8 +74,8 @@ def normalize():
 
 normalize()
 
-
-for k in range(0, 5000):
+maxNorm = 10
+while(maxNorm > 0.00001):
     newS = np.zeros_like(S)
     maxNorm = 0
     for i in range(1, SX + 1):

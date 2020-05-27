@@ -3,8 +3,8 @@ import numpy as np
 # matrix_size = 16
 
 
-SX = 5
-SY = 5
+SX = 4
+SY = 4
 x = np.array([1.0, 0.0, 0.0])
 y = np.array([0.0, 1.0, 0.0])
 z = np.array([0.0, 0.0, 1.0])
@@ -37,7 +37,8 @@ def normalPrintS():
 
 def grad(i, j):
     tmp = J * (S[i + 1][j] + S[i - 1][j] + S[i][j + 1] + S[i][j - 1])
-    tmp2 = D * (np.cross(S[i + 1][j], x) + np.cross(S[i][j + 1], y) - np.cross(S[i - 1][j], x) - np.cross(S[i][j - 1], y))
+    tmp2 = D * (np.cross(S[i + 1][j], x) + np.cross(S[i][j + 1], y)
+                - np.cross(S[i - 1][j], x) - np.cross(S[i][j - 1], y))
     tmp3 = 2 * z * K * np.dot(z, S[i][j]).item()
     res = - tmp + tmp2 - tmp3
     return res
@@ -47,7 +48,8 @@ def E():
     res = 0
     for i in range(1, SX + 1):
         for j in range(1, SY + 1):
-            tmp = J * np.dot((S[i + 1][j] + S[i - 1][j] + S[i][j + 1] + S[i][j - 1]), S[i][j])
+            tmp = J * np.dot((S[i + 1][j] + S[i - 1][j]
+                              + S[i][j + 1] + S[i][j - 1]), S[i][j])
             tmp2 = D * (+ np.dot(np.cross(S[i + 1][j], S[i][j]), x)
                         + np.dot(np.cross(S[i][j + 1], S[i][j]), y)
                         - np.dot(np.cross(S[i - 1][j], S[i][j]), x)
@@ -66,7 +68,10 @@ def E2():
 def normalize():
     for i in range(1, SX + 1):
         for j in range(1, SY + 1):
-            norm = S[i][j][0] * S[i][j][0] + S[i][j][1] * S[i][j][1] + S[i][j][2] * S[i][j][2]
+            norm = (
+            S[i][j][0] * S[i][j][0] +
+            S[i][j][1] * S[i][j][1] +
+            S[i][j][2] * S[i][j][2])
             norm = np.sqrt(norm)
             S[i][j][0] = S[i][j][0] / norm
             S[i][j][1] = S[i][j][1] / norm
@@ -81,7 +86,8 @@ for i in range(1, SX + 1):
         prev_grad[i][j] = grad(i, j)
 omega = 1
 k = 0
-while(omega > 0.001):
+maxNorm =  100
+while(maxNorm > 0.001):
     newS = np.zeros_like(S)
     maxNorm = 0
     sum_of_prev_grad = 0
@@ -92,11 +98,13 @@ while(omega > 0.001):
 
     for i in range(1, SX + 1):
         for j in range(1, SY + 1):
-            sum_of_prev_grad = sum_of_prev_grad + np.dot(prev_grad[i][j], prev_grad[i][j])
+            sum_of_prev_grad =  sum_of_prev_grad + (
+                np.dot(prev_grad[i][j], prev_grad[i][j]))
 
     for i in range(1, SX + 1):
         for j in range(1, SY + 1):
-            sum_of_grad = sum_of_grad + np.dot(cur_grad[i][j], cur_grad[i][j])
+            sum_of_grad = sum_of_grad + (
+                np.dot(cur_grad[i][j], cur_grad[i][j]))
 
     omega = sum_of_grad / sum_of_prev_grad
 
@@ -110,8 +118,10 @@ while(omega > 0.001):
                 prev_grad[i][j] = grad(i, j)
                 newS[i][j] = S[i][j] - step * (grad(i, j))
             else:
-                newS[i][j] = S[i][j] - step * (grad(i, j)) + ( step * omega *  prev_grad[i][j] )
-                prev_grad[i][j] = grad(i, j) + prev_grad[i][j] * omega
+                newS[i][j] = (S[i][j] - step * (grad(i, j)) +
+                              ( step * omega *  prev_grad[i][j] ))
+                prev_grad[i][j] = (
+                    grad(i, j) + prev_grad[i][j] * omega)
     S = newS
     normalize()
     print(E(),maxNorm)

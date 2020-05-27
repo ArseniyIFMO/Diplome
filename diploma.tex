@@ -76,15 +76,15 @@ showstringspaces=false            %
     Полная энергия магнитной системы состоит из:
     Тогда энергия магнитной системы описывается как:
     \begin{center}
-    $E(S) = - \frac{1}{2}S^T*A*S + B*S$,
+    $E(S) = - \frac{1}{2}S^T \cdot AS + BS$,
     \end{center}
-    где $A$ - матрица $n * n$, $B$ - матрица $1 \times n$,
+    где $A$ - матрица $n \times n$, $B$ - матрица $1 \times n$,
     каждый элемент которой - трехмерный вектор $(x, y, z)$
-    , a $S$ -- матрица $1*n$, каждый элемент которой - трехмерный вектор $S_i = (x, y, z)$ - вектор магнитного момента $i$-го спина. \\
-    Матрица S и описывает состояние магнитной системы.
-    Причем, требуется что бы норма каждого из векторов была равна $1$.Иными словами, должно соблюдаться условие:\\
+    , a $S$ -- матрица $1\times n$, каждый элемент которой - трехмерный вектор $S_i = (x, y, z)$ - вектор магнитного момента $i$-го спина. \\
+    Состояние магнитной системы задается с помощью векторного поля S и описывает состояние магнитной системы, где $S_i$ - направление магнитного момента $i$-го  спина.
+    Причем, требуется что бы норма каждого из векторов была равна $1$. Иными словами, должно соблюдаться условие:\\
      \begin{center}
-     $S_{i, j, x} + S_{i, j, x} + S_{i, j, x} = 1, \|S_{i, j}\| = 1$\\
+     ${S_{i}}_x^2 + {S_{i}}_y^2 + {S_{i}}_z^2 = 1, \|S_{i}\| = 1$\\
     \end{center}
     Полная энергия магнитной системы состоит из энергии обмена между соседними скирмионами в сетке,  антисимметричного обменного взаимодействия или взаимодействием Дзялошинского — Мория, а так же анизотропии.\\
     В нашей задаче:
@@ -121,16 +121,16 @@ showstringspaces=false            %
     $x = (1,0, 0), y = (0,1, 0), z =(0, 0 , 1)$\\
         \begin{center}
     $E(S) = \displaystyle{\sum_{i, j}} - J (S_{i - 1, j} + S_{i + 1, j} + S_{i, j - 1} + S_{i, j + 1}) \cdot S_{i,j} + \\
-    D  (-S_{i - 1, j} \times x  + S_{i + 1, j} \times x - S_{i, j - 1} \times y - S_{i, j + 1} \times y)\cdot S_{i,j}
+    D  (-S_{i - 1, j} \times x  + S_{i + 1, j} \times x - S_{i, j - 1} \times y + S_{i, j + 1} \times y)\cdot S_{i,j}
     + \\
     K  (z \cdot S_{i,j}) ^ 2$,\\
     \end{center}[1]
     где
      \begin{center}
     $\displaystyle{\sum_{i, j}} J* (S_{i - 1, j} + S_{i + 1, j} + S_{i, j - 1} + S_{i, j + 1}) \cdot S_{i,j}$\end{center} -- энергия обмена, а \begin{center}
-    $\displaystyle{\sum_{i, j}} D * (-S_{i - 1, j} \times x  + S_{i + 1, j} \times x - S_{i, j - 1} \times y - S_{i, j + 1} \times y)$\end{center}  -- взаимодействие Дзялошински - Мория, а - \begin{center}
+    $\displaystyle{\sum_{i, j}} D * (-S_{i - 1, j} \times x  + S_{i + 1, j} \times x - S_{i, j - 1} \times y + S_{i, j + 1} \times y)\cdot S_{i,j}$\end{center}  -- взаимодействие Дзялошински - Мория, а - \begin{center}
     $\displaystyle{\sum_{i, j}} K * (z \cdot S_{i,j}) ^ 2$\end{center} - энергия анизотропии\\
-    Обычно, таки задачи решаются градиентным спуском, однако, в данной ситуации он не применим напрямую из за ограничений на норму спинов.
+    Обычно, задачи минимизации решаются градиентным спуском, однако, в данной ситуации он не применим напрямую из за ограничений на норму спинов.
     Далее,мы рассмотрим несколько алгоритмов, которыми мы попытаемся решить данную задачу.
     \newpage
     \section{Методы решения}
@@ -150,7 +150,7 @@ showstringspaces=false            %
     \begin{center}
     $S_{i, j} = S_{i, j} - \alpha * \nabla E(S)_{i, j}$
     \end{center}, а потом отнормируем каждый элемент, то есть \begin{center}$S_{i, j} = \frac{S_{i, j}}{\|S_{i, j}\|}$.\end{center}\\
-    Тогда градиент с учетом нормировки будет равен:\\
+    Тогда градиент спроецированный градиент будет равен:\\
     \begin{center}
     $\Delta_{i, j} = \nabla E(S)_{i, j} - S_{i, j} \cdot \nabla E(S)_{i, j} * S_{i, j}$\\
     $\Delta = max(\Delta_{i, j}).$\\
@@ -169,7 +169,7 @@ showstringspaces=false            %
 		    \For{ i = 1 to n}{
 		        \For{ j = 1 to n}{
 		            newS[i][j] = S[i][j] - \alpha * \nabla E(S)_{i,j}\\
-		            $\Delta = max(\Delta, \|\nabla S_{i, j} - \nabla S_{i, j} \cdot E(S)_{i, j} * S_{i, j}\|)$\\
+		            $\Delta = max(\Delta, \| \nabla E(S)_{i, j} - S_{i, j} \cdot \nabla E(S)_{i, j} * S_{i, j})$\\
 	            }
 	        }
 	        S = newS\\
@@ -179,13 +179,15 @@ showstringspaces=false            %
     \end{algorithm}
     \subsection{Метод 2}
     Так же, я  отдельно попробую метод, в котором  $\alpha$ не постоянная, а каждый раз будет равна новому числу
-     $\alpha  = \frac{\| \nabla S^k \|^2}{\| \nabla S^{k-1} \|^2}$.
-    Сущетвует несколько способов задать критерий остановки: например, сделать фиксированное число итераций, либо делать итерации пока  ($\| \Delta \|> \varepsilon$)\\
+     $\alpha_k  = \frac{\| \nabla S^k \|^2}{\| \nabla S^{k-1} \|^2}$, где $k$ - номер итерации.\\
+     $\| \nabla S^k \|^2  = \displaystyle{\sum_{i, j}}  \nabla S^k_{i,j} \cdot  \nabla S^k_{i,j}$\\
+    Существует несколько способов задать критерий остановки: например, сделать фиксированное число итераций, либо делать итерации пока  ($\| \Delta \|> \varepsilon$)\\
     \begin{algorithm}[H]
 		\SetAlgoLined
 		\KwData{Входные данные}
 		\KwResult{Как прочитать книгу }
 		\alpha = 0.001;\\
+		$ \Delta  = 1$\\
 		\While{$\Delta > \varepsilon$}{
 		     $\alpha  = \frac{\| \nabla S^k \|^2}{\| \nabla S^{k-1} \|^2}$\\
 		     $ \Delta  =0$\\
@@ -202,7 +204,9 @@ showstringspaces=false            %
     \end{algorithm}
     \subsection{Метод 3}
     Воспользуемся методом сопряженных градиентов.\\
-    Сперва опробуем метод Флетчера - Риза[5]. В нем:
+    Сперва опробуем метод Флетчера - Риза[5].
+    Так как матрица $A$ симметрическая и положительно определена, этот метод работает.
+    В нем:
     \begin{center}
     $ x_0= \nabla E(S^0)\\
     S^{(k + 1)}_{i, j} = S^{k}_{i, j} + \alpha_k * x_k $,\\
@@ -218,6 +222,7 @@ showstringspaces=false            %
 		\KwData{Входные данные}
 		\KwResult{Как прочитать книгу }
 		\alpha = 0.001;\\
+		$ \Delta  = 1$\\
 		\While{$MyDelta > \varepsilon$}{
 		     $\omega  = \frac{\| \nabla S^k \|^2}{\| \nabla S^{k-1} \|^2}$\\
 		    \For{ i = 1 to n}{
@@ -245,6 +250,7 @@ showstringspaces=false            %
 		\KwData{Входные данные}
 		\KwResult{Как прочитать книгу }
 		\alpha = 0.001;\\
+		$ \Delta  = 1$\\
 		\While{$MyDelta > \varepsilon$}{
 		     $\omega  = \frac{\| \nabla S^k \|^2}{\| \nabla S^{k-1} \|^2}$\\
 		    \For{ i = 1 to n}{
@@ -274,7 +280,7 @@ showstringspaces=false            %
         tmp = J * (S[i + 1][j] + S[i - 1][j] +
         +S[i][j + 1] + S[i][j - 1])
         tmp2 = D * (np.cross(S[i + 1][j], x)
-        +np.cross(S[i][j + 1], y)
+        + np.cross(S[i][j + 1], y)
         - np.cross(S[i - 1][j], x)
         - np.cross(S[i][j - 1], y))
         tmp3 = 2 * z * K * np.dot  (z, S[i][j]).item()
@@ -343,8 +349,8 @@ showstringspaces=false            %
     #Length of step
     step = 0.1
 
-
-    for k in range(0, 10000):
+    maxNorm = 10
+    while(maxNorm > 0.001):
         newS = np.zeros_like(S)
         maxNorm = 0
         for i in range(1, SX + 1):
@@ -412,8 +418,12 @@ def normalPrintS():
 
 #Calculate gradient
 def grad(i, j):
-    tmp = J * (S[i + 1][j] + S[i - 1][j] + S[i][j + 1] + S[i][j - 1])
-    tmp2 = D * (np.cross(S[i + 1][j], x) + np.cross(S[i][j + 1], y) - np.cross(S[i - 1][j], x) - np.cross(S[i][j - 1], y))
+    tmp = J * (S[i + 1][j] + S[i - 1][j] +
+               S[i][j + 1] + S[i][j - 1])
+    tmp2 = D * (np.cross(S[i + 1][j], x) +
+                np.cross(S[i][j + 1], y) -
+                np.cross(S[i - 1][j], x) -
+                np.cross(S[i][j - 1], y))
     tmp3 = 2 * z * K * np.dot(z, S[i][j]).item()
     res = - tmp + tmp2 - tmp3
     return res
@@ -423,7 +433,8 @@ def E():
     res = 0
     for i in range(1, SX + 1):
         for j in range(1, SY + 1):
-            tmp = J * np.dot((S[i + 1][j] + S[i - 1][j] + S[i][j + 1] + S[i][j - 1]), S[i][j])
+            tmp = J * np.dot((S[i + 1][j] +
+            S[i - 1][j] + S[i][j + 1] + S[i][j - 1]), S[i][j])
             tmp2 = D * (+ np.dot(np.cross(S[i + 1][j], S[i][j]), x)
                         + np.dot(np.cross(S[i][j + 1], S[i][j]), y)
                         - np.dot(np.cross(S[i - 1][j], S[i][j]), x)
@@ -444,7 +455,9 @@ def E2():
 def normalize():
     for i in range(1, SX + 1):
         for j in range(1, SY + 1):
-            norm = S[i][j][0] * S[i][j][0] + S[i][j][1] * S[i][j][1] + S[i][j][2] * S[i][j][2]
+            norm = (S[i][j][0] * S[i][j][0] +
+                    S[i][j][1] * S[i][j][1] +
+                    S[i][j][2] * S[i][j][2])
             norm = np.sqrt(norm)
             S[i][j][0] = S[i][j][0] / norm
             S[i][j][1] = S[i][j][1] / norm
@@ -457,8 +470,8 @@ cur_grad = np.random.randn(SX + 2, SY + 2, 3)
 for i in range(1, SX + 1):
     for j in range(1, SY + 1):
         prev_grad[i][j] = grad(i, j)
-
-for k in range(0, 10000):
+maxNorm = 10
+while(maxNorm > 0.001):
     newS = np.zeros_like(S)
     maxNorm = 0
     sum_of_prev_grad = 0
@@ -469,11 +482,13 @@ for k in range(0, 10000):
 
     for i in range(1, SX + 1):
         for j in range(1, SY + 1):
-            sum_of_prev_grad = sum_of_prev_grad + np.dot(prev_grad[i][j], prev_grad[i][j])
+            sum_of_prev_grad = (sum_of_prev_grad
+            + np.dot(prev_grad[i][j], prev_grad[i][j]))
 
     for i in range(1, SX + 1):
         for j in range(1, SY + 1):
-            sum_of_grad = sum_of_grad + np.dot(cur_grad[i][j], cur_grad[i][j])
+            sum_of_grad = (sum_of_grad
+            + np.dot(cur_grad[i][j], cur_grad[i][j]))
 
     alpha = sum_of_grad / sum_of_prev_grad
 
@@ -523,11 +538,6 @@ D = 0.35
 J = 1
 step = 0.1
 
-# print(S.shape)
-# np.roll
-# np.cross
-# alpha
-# steps = 1000
 def normalPrintS():
     for i in range(0, SX + 2):
         print()
@@ -537,16 +547,24 @@ def normalPrintS():
 
 
 def grad(i, j):
-    tmp = J * (S[i + 1][j] + S[i - 1][j] + S[i][j + 1] + S[i][j - 1])
-    tmp2 = D * (np.cross(S[i + 1][j], x) + np.cross(S[i][j + 1], y) - np.cross(S[i - 1][j], x) - np.cross(S[i][j - 1], y))
+    tmp = J * (S[i + 1][j] + S[i - 1][j] +
+               S[i][j + 1] + S[i][j - 1])
+    tmp2 = D * (np.cross(S[i + 1][j], x)
+               + np.cross(S[i][j + 1], y)
+               - np.cross(S[i - 1][j], x)
+               - np.cross(S[i][j - 1], y))
     tmp3 = 2 * z * K * np.dot(z, S[i][j]).item()
     res = - tmp + tmp2 - tmp3
     return res
 
 def gradX(X, i, j):
-    tmp = J * (X[i + 1][j] + X[i - 1][j] + X[i][j + 1] + X[i][j - 1])
-    tmp2 = D * (np.cross(X[i + 1][j], x) + np.cross(X[i][j + 1], y) - np.cross(X[i - 1][j], x) - np.cross(X[i][j - 1], y))
-    tmp3 = 2 * z * K * np.dot(z, X[i][j]).item()
+    tmp = J * (X[i + 1][j] + X[i - 1][j]
+             + X[i][j + 1] + X[i][j - 1])
+    tmp2 = D * (np.cross(X[i + 1][j], x)
+        + np.cross(X[i][j + 1], y)
+        - np.cross(X[i - 1][j], x)
+        - np.cross(X[i][j - 1], y))
+        tmp3 = 2 * z * K * np.dot(z, X[i][j]).item()
     res = - tmp + tmp2 - tmp3
     return res
 
@@ -556,7 +574,8 @@ def E():
     res = 0
     for i in range(1, SX + 1):
         for j in range(1, SY + 1):
-            tmp = J * np.dot((S[i + 1][j] + S[i - 1][j] + S[i][j + 1] + S[i][j - 1]), S[i][j])
+            tmp = J * np.dot((S[i + 1][j] + S[i - 1][j]
+            + S[i][j + 1] + S[i][j - 1]), S[i][j])
             tmp2 = D * (+ np.dot(np.cross(S[i + 1][j], S[i][j]), x)
                         + np.dot(np.cross(S[i][j + 1], S[i][j]), y)
                         - np.dot(np.cross(S[i - 1][j], S[i][j]), x)
@@ -575,7 +594,9 @@ def E2():
 def normalize():
     for i in range(1, SX + 1):
         for j in range(1, SY + 1):
-            norm = S[i][j][0] * S[i][j][0] + S[i][j][1] * S[i][j][1] + S[i][j][2] * S[i][j][2]
+            norm = S[i][j][0] * S[i][j][0]
+                 + S[i][j][1] * S[i][j][1]
+                 + S[i][j][2] * S[i][j][2]
             norm = np.sqrt(norm)
             S[i][j][0] = S[i][j][0] / norm
             S[i][j][1] = S[i][j][1] / norm
@@ -595,25 +616,32 @@ for i in range(1, SX + 1):
     for j in range(1, SY + 1):
         SinTheirCode[i][j] = grad(i, j)
 
+initEnergy = 0
+endEnergy = E()
 
-while(omega > 0.001):
+while(abs(endEnergy - initEnergy) > 0.000001):
+    initEnergy = E()
     ch = 0
     zn = 0
     for i in range(1, SX + 1):
         for j in range(1, SY + 1):
             ch = ch + np.dot(grad(i,j), gradX(SinTheirCode, i, j))
-            zn = zn + np.dot(gradX(SinTheirCode, i, j), SinTheirCode[i][j])
+            zn = zn + np.dot(gradX(SinTheirCode, i, j),
+                             SinTheirCode[i][j])
 
     beta = ch / zn
     for i in range(1, SX + 1):
         for j in range(1, SY + 1):
-            SinTheirCode[i][j] = grad(i, j) + beta * SinTheirCode[i][j]
+            SinTheirCode[i][j] = (grad(i, j)
+                                + beta * SinTheirCode[i][j])
     ch = 0
     zn = 0
     for i in range(1, SX + 1):
         for j in range(1, SY + 1):
-            ch = ch + np.dot(grad(i,j), SinTheirCode[i][j])
-            zn = zn + np.dot(gradX(SinTheirCode, i, j), SinTheirCode[i][j])
+            ch = ch + np.dot(
+                grad(i,j), SinTheirCode[i][j])
+            zn = zn + np.dot(
+                gradX(SinTheirCode, i, j), SinTheirCode[i][j])
 
     alpha  = - ch/zn
 
@@ -628,6 +656,7 @@ while(omega > 0.001):
             ##
             S[i][j] = S[i][j] - alpha * SinTheirCode[i][j]
     normalize()
+    endEnergy = E()
 print(E())
 
  \end{python}
@@ -669,8 +698,12 @@ def normalPrintS():
 
 
 def grad(i, j):
-    tmp = J * (S[i + 1][j] + S[i - 1][j] + S[i][j + 1] + S[i][j - 1])
-    tmp2 = D * (np.cross(S[i + 1][j], x) + np.cross(S[i][j + 1], y) - np.cross(S[i - 1][j], x) - np.cross(S[i][j - 1], y))
+    tmp = J * (S[i + 1][j] + S[i - 1][j]
+             + S[i][j + 1] + S[i][j - 1])
+    tmp2 = D * (np.cross(S[i + 1][j], x)
+              + np.cross(S[i][j + 1], y)
+              - np.cross(S[i - 1][j], x)
+              - np.cross(S[i][j - 1], y))
     tmp3 = 2 * z * K * np.dot(z, S[i][j]).item()
     res = - tmp + tmp2 - tmp3
     return res
@@ -680,7 +713,8 @@ def E():
     res = 0
     for i in range(1, SX + 1):
         for j in range(1, SY + 1):
-            tmp = J * np.dot((S[i + 1][j] + S[i - 1][j] + S[i][j + 1] + S[i][j - 1]), S[i][j])
+            tmp = J * np.dot((S[i + 1][j] + S[i - 1][j]
+                            + S[i][j + 1] + S[i][j - 1]), S[i][j])
             tmp2 = D * (+ np.dot(np.cross(S[i + 1][j], S[i][j]), x)
                         + np.dot(np.cross(S[i][j + 1], S[i][j]), y)
                         - np.dot(np.cross(S[i - 1][j], S[i][j]), x)
@@ -699,7 +733,10 @@ def E2():
 def normalize():
     for i in range(1, SX + 1):
         for j in range(1, SY + 1):
-            norm = S[i][j][0] * S[i][j][0] + S[i][j][1] * S[i][j][1] + S[i][j][2] * S[i][j][2]
+            norm = (
+            S[i][j][0] * S[i][j][0] +
+            S[i][j][1] * S[i][j][1] +
+            S[i][j][2] * S[i][j][2])
             norm = np.sqrt(norm)
             S[i][j][0] = S[i][j][0] / norm
             S[i][j][1] = S[i][j][1] / norm
@@ -714,7 +751,10 @@ for i in range(1, SX + 1):
         prev_grad[i][j] = grad(i, j)
 omega = 1
 k = 0
-while(omega > 0.001):
+energy  = E()
+cur_energy = 0
+while(maxNorm > 0.001):
+    energy =  cur_energy
     newS = np.zeros_like(S)
     maxNorm = 0
     sum_of_prev_grad = 0
@@ -725,11 +765,13 @@ while(omega > 0.001):
 
     for i in range(1, SX + 1):
         for j in range(1, SY + 1):
-            sum_of_prev_grad = sum_of_prev_grad + np.dot(prev_grad[i][j], prev_grad[i][j])
+            sum_of_prev_grad = sum_of_prev_grad + (
+                np.dot(prev_grad[i][j], prev_grad[i][j]))
 
     for i in range(1, SX + 1):
         for j in range(1, SY + 1):
-            sum_of_grad = sum_of_grad + np.dot(cur_grad[i][j], cur_grad[i][j])
+            sum_of_grad = sum_of_grad + (
+                np.dot(cur_grad[i][j], cur_grad[i][j]))
 
     omega = sum_of_grad / sum_of_prev_grad
 
@@ -743,8 +785,10 @@ while(omega > 0.001):
                 prev_grad[i][j] = grad(i, j)
                 newS[i][j] = S[i][j] - step * (grad(i, j))
             else:
-                newS[i][j] = S[i][j] - step * (grad(i, j)) + ( step * omega *  prev_grad[i][j] )
-                prev_grad[i][j] = grad(i, j) + prev_grad[i][j] * omega
+                newS[i][j] = (S[i][j] - step * (grad(i, j)) +
+                             ( step * omega *  prev_grad[i][j]))
+                prev_grad[i][j] = (
+                    grad(i, j) + prev_grad[i][j] * omega)
     S = newS
     normalize()
     print(E(),maxNorm)
@@ -756,7 +800,7 @@ print(E())
 \newpage
 \section{Глава 3\\
 Сравнение быстродействия методов}
- Сравним быстродействие данных методов:\\
+ Сравним быстродействие данных методов для различных размеров систем и различных  ($\| \Delta \|< \varepsilon$).\\
  \begin{tikzpicture}
 \begin{axis}[
     title={Метод 1},
@@ -836,32 +880,6 @@ print(E())
 
  \begin{tikzpicture}
 \begin{axis}[
-    title={Метод 4},
-    xlabel={N},
-    ylabel={time, c},
-    xmin=3, xmax=10,
-    ymin=0, ymax=120,
-    xtick={4,5,6,7,8},
-    ytick={0,20,40,60,80,100,120},
-    legend pos=north west,
-    ymajorgrids=true,
-    grid style=dashed,
-]
-
-\addplot[
-    color=blue,
-    mark=square,
-    ]
-    coordinates {
-    (0,23.1)(10,27.5)(20,32)(30,37.8)(40,44.6)(60,61.8)(80,83.8)(100,114)
-    };
-    \legend{Время работы для разных $n$ }
-
-\end{axis}
-\end{tikzpicture}\\
-
- \begin{tikzpicture}
-\begin{axis}[
     title={Метод 5},
     xlabel={N},
     ylabel={time, c},
@@ -884,6 +902,18 @@ print(E())
     \legend{CuSO$_4\cdot$5H$_2$O}
 \end{axis}
 \end{tikzpicture}\\
+Сравнителььная  таблица
+$\nabla > 0.001 $
+\begin{center}
+\begin{tabular}{ c c c c c}
+       & метод 1 & метод 2 & метод 3 ХЗ & метод 4 \\
+ n = 2 & 0.74    & 0.45     & 1.15 & 2.15 \\
+ n = 3 & 1.48    & 0.9      & 3.5 & 5.81 \\
+ n = 4 & 3.18    & 1.8      & 5.8 & 10.07 \\
+ n = 5 & 6.83    & 3.0      & 18.7 & 15.6 \\
+ n = 6 & 10.21   & 5.8      & 26.0 & 31.0 \\
+\end{tabular}
+\end{center}
 Исходя из показанных сверху граифков, можно заключить что самым оптимальным методом является метод      , а остальные не такими оптимальными.
 Однако, расход памяти  разных алгоритмах тоже разнится.
  \newpage

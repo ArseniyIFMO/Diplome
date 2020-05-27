@@ -1,10 +1,12 @@
+from time import process_time
+
 import numpy as np
 
 # matrix_size = 16
 
 
-SX = 4
-SY = 4
+SX = 6
+SY = 6
 x = np.array([1.0, 0.0, 0.0])
 y = np.array([0.0, 1.0, 0.0])
 z = np.array([0.0, 0.0, 1.0])
@@ -102,7 +104,8 @@ for i in range(1, SX + 1):
 
 initEnergy = 0
 endEnergy = E()
-while(abs(endEnergy - initEnergy) > 0.000001):
+t1 = process_time()
+while(abs(endEnergy - initEnergy) > 0.00000001):
     initEnergy = E()
     ch = 0
     zn = 0
@@ -136,8 +139,10 @@ while(abs(endEnergy - initEnergy) > 0.000001):
             S[i][j] = S[i][j] - alpha * SinTheirCode[i][j]
     normalize()
     endEnergy = E()
-    print(E())
+    #print(E())
 print(E())
+t2 = process_time()
+print(t2 - t1)
 
 
 

@@ -1,11 +1,12 @@
+from time import process_time
 
 import numpy as np
 
 # matrix_size = 16
 
 
-SX = 5
-SY = 5
+SX = 6
+SY = 6
 x = np.array([1.0, 0.0, 0.0])
 y = np.array([0.0, 1.0, 0.0])
 z = np.array([0.0, 0.0, 1.0])
@@ -87,6 +88,7 @@ for i in range(1, SX + 1):
         prev_grad[i][j] = grad(i, j)
 
 maxNorm = 10
+t1 = process_time()
 while(maxNorm > 0.00001):
     newS = np.zeros_like(S)
     maxNorm = 0
@@ -120,7 +122,8 @@ while(maxNorm > 0.00001):
     S = newS
     normalize()
     #print(E(), maxNorm)
-
+t2 = process_time()
+print(t2 - t1)
 print(E())
 
 

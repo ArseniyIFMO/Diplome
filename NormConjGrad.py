@@ -108,8 +108,10 @@ while(abs(endEnergy - initEnergy) > 0.000001):
     zn = 0
     for i in range(1, SX + 1):
         for j in range(1, SY + 1):
-            ch = ch + np.dot(grad(i,j), gradX(SinTheirCode, i, j))
-            zn = zn + np.dot(gradX(SinTheirCode, i, j), SinTheirCode[i][j])
+            ch = ch + np.dot(
+                grad(i,j), gradX(SinTheirCode, i, j))
+            zn = zn + np.dot(
+                gradX(SinTheirCode, i, j), SinTheirCode[i][j])
 
     beta = ch / zn
     for i in range(1, SX + 1):

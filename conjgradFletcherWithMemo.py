@@ -1,11 +1,12 @@
+from time import process_time
 
 import numpy as np
 
 # matrix_size = 16
 
 
-SX = 6
-SY = 6
+SX = 4
+SY = 4
 x = np.array([1.0, 0.0, 0.0])
 y = np.array([0.0, 1.0, 0.0])
 z = np.array([0.0, 0.0, 1.0])
@@ -80,8 +81,9 @@ cur_grad = np.random.randn(SX + 2, SY + 2, 3)
 for i in range(1, SX + 1):
     for j in range(1, SY + 1):
         prev_grad[i][j] = grad(i, j)
-
-for k in range(0, 10000):
+maxNorm = 10
+t1 = process_time()
+while(maxNorm > 0.0001):
     newS = np.zeros_like(S)
     maxNorm = 0
     sum_of_prev_grad = 0
@@ -98,7 +100,7 @@ for k in range(0, 10000):
         for j in range(1, SY + 1):
             sum_of_grad = sum_of_grad + np.dot(cur_grad[i][j], cur_grad[i][j])
 
-    alpha = sum_of_grad / sum_of_prev_grad
+    alpha = 4 / sum_of_grad #/ sum_of_prev_grad
 
     for i in range(1, SX + 1):
         for j in range(1, SY + 1):
@@ -111,8 +113,9 @@ for k in range(0, 10000):
 
     S = newS
     normalize()
-    print(E(), maxNorm)
-
+    #   print(E(), maxNorm)
+t2 = process_time()
+print(t2 - t1)
 print(E())
 
 

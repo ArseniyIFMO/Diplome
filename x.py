@@ -91,6 +91,7 @@ while(maxNorm > 0.0001):
     #print(E(), maxNorm)
     S = newS
     k= k + 1
+    print(maxNorm)
     normalize()
 t2 = process_time()
 #print(E(), maxNorm)

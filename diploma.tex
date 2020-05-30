@@ -9,6 +9,8 @@
     \usepackage{wrapfig}
     \usepackage{pgfplots}
     \usepackage{verbatim}
+    \linespread{1.3}
+    \usepackage[a4paper, left=25mm, right=10mm, top=20mm, bottom=20mm]{geometry}
     \usepackage{indentfirst}
  \usepackage{geometry}
  \usepackage{algorithm2e}
@@ -57,12 +59,9 @@ showstringspaces=false            %
     \begin{document}
     \tableofcontents % сгенерировать оглавление
     \clearpage
-    \section{Введение}    \noindent
+    \section{Введение32}    \noindent
     В данной работе мы будем искать метастабильные состояния магнитной системы\\
-    Одной из перспективных систем хранения информации будущего являются спиновые системы.
-
-    Характеризация магнитных материалов начинается с  поиска метастабильного состояния системы.
-    В данной работе будет решаться задача поиска такого состояния.\\
+    Одной из перспективных систем хранения информации будущего являются спиновые системы. Характеризация магнитных материалов начинается с  поиска метастабильного состояния системы.В данной работе будет решаться задача поиска такого состояния.\\
         Метастабильное состояние - это состояние системы, в котором энергия минимальна, и, соответственно, в работе требуется находить минимальную энергию некоторой магнитной системы.\\
     Энергия магнитной системы выражается некоторым функционалом, зависящим от положения каждого из скирмионов, причем на положения скирмионов накладываются некоторые ограничения. \\Соответственно, в данной работе будет произведено исследование различных методов поиска минимума таких функционалов.\\
     Проблематика исследований:\\
@@ -115,6 +114,7 @@ showstringspaces=false            %
     \end{array}
     \right)
     \end{equation*}\\
+    \\
     То есть  \begin{center} $A_{i, i} = -1 \\ A_{i - 1, i} =  J + [D*x]_\times \\
     A_{i+1, i} =  J - [D*x]_\times \\
     A_{i + p, i} =  J + [D*y]_\times \\
@@ -141,7 +141,7 @@ showstringspaces=false            %
     Далее,мы рассмотрим несколько алгоритмов, которыми мы попытаемся решить данную задачу.
     \newpage
     \section{Методы решения}
-    \subsection{Метод 1}
+    \subsection{Метод 1 Градиентный спуск}
     Первый метод которым можно воспользоваться  - градиентный спуск[2]. Градиент по скирмиону на позиции $i, j$ будет равен:
       \begin{center}
     $\nabla E(S)_{i, j} = J * (S_{i + 1,j} + S_{i - 1,j} + S_{i, j + 1} + S_{i, j - 1})
@@ -190,12 +190,12 @@ showstringspaces=false            %
 		}
 	\caption{Метод 1}
     \end{algorithm}
-    \subsection{Метод 2}
-    Так же, я  отдельно попробую метод, в котором  $\alpha$ не постоянная, а каждый раз будет равна новому числу
+    \subsection{Метод 2 Градиентный спуск с непостоянной $\alpha$}
+    Так же, я  отдельно попробую метод, в котором  $\alpha$ не постоянная, а каждый раз будет равна новому числу. Этот метод описывается в работе [11].\\
     \begin{comment}
      $\alpha_k  = \frac{\| \nabla S^k \|^2}{\| \nabla S^{k-1} \|^2}$,
      \end{comment}
-     $\alpha_k  = \frac{1}{\| \nabla S^k \|^2}$, где $k$ - номер итерации, а $S^k$ - состояние системы на итерации с номером $k$\\
+     $\alpha_k  = \frac{1}{\| \nabla S^k \|^2}$, где $k$ - номер итерации, а $S^k$ - состояние системы на итерации с номером $k$\\]
      $\| \nabla S^k \|^2  = \displaystyle{\sum_{i, j}}  \nabla S^k_{i,j} \cdot  \nabla S^k_{i,j}$[11]\\
     Существует несколько способов задать критерий остановки: например, сделать фиксированное число итераций, либо делать итерации пока  ($\| \Delta \|> \varepsilon$)\\
     \begin{comment}
@@ -224,7 +224,7 @@ showstringspaces=false            %
 		}
 	\caption{Метод 2}
     \end{algorithm}
-    \subsection{Метод 3}
+    \subsection{Метод 3 Метод сопряженных градиентов}
     Воспользуемся методом сопряженных градиентов.\\
     Сперва опробуем метод Флетчера - Риза[5][6].
     Так как матрица $A$ симметрическая и положительно определена, этот метод работает.
@@ -259,9 +259,9 @@ showstringspaces=false            %
 	        normalize(S)
 
 		}
-	\caption{Метод 1}
+	\caption{Метод 3}
     \end{algorithm}
-    \subsection{Метод 4}
+    \subsection{Метод 4 Инерционный градиентный спуск}
     Попробуем так - же метод, в котором направление шага на $k$ шаге зависит от направления градиента на $k - 1$ шаге\\
     Такой вид градиентного спуска называется инерционным и описан в работе [7].
     \\
@@ -274,8 +274,9 @@ showstringspaces=false            %
 		\KwData{Случайное состояние}
 		\KwResult{Состояние с минимальной энергией}
 		\alpha = 0.001;\\
-		$ \Delta  = 1$\\
+		$ MyDelta  = 1$\\
 		\While{$MyDelta > \varepsilon$}{
+		     $ MyDelta  = 1$\\
 		     $\omega  = \frac{\| \nabla S^k \|^2}{\| \nabla S^{k-1} \|^2}$\\
 		    \For{ i = 1 to n}{
 		        \For{ j = 1 to n}{
@@ -294,7 +295,7 @@ showstringspaces=false            %
     \section{
     Глава 2
     Практическая часть}
-    \subsection{Метод 1}
+    \subsection{Метод 1 Градиентный спуск}
     Приведу реализацию алгоритма на языке и сравним их быстродействие.
     Для реализации данных алгоритмов используем язык Python, а так - же библиотеку numpy.Язык python и библиотека numpy  были выбраны как наиболее удобные[3][4]
     Реализация с фиксированным $\alpha$\\
@@ -364,10 +365,10 @@ showstringspaces=false            %
     #Anisotropy constant
     K = 0.4
 
-    #Exchange energy
+    #Dzyaloshinskii-Moriya interaction
     D = 0.35
 
-    #Dzyaloshinskii-Moriya interaction
+    #Exchange energy
     J = 1
 
     #Length of step
@@ -398,8 +399,8 @@ showstringspaces=false            %
 
 print(E())
 \end{python}
- \subsection{Метод 2}
- Можно попробовать реализовать обычный градиентный спуск, но не с фиксированным $\alpha$, а с $\alpha = \frac{\| \nabla S^k \|^2}{\| \nabla S^{k-1} \|^2}$ [10]\\
+ \subsection{Метод 2 Градиентный спуск с непостоянной $\alpha$}
+ Можно попробовать реализовать обычный градиентный спуск, но не с фиксированным $\alpha$, а с $\alpha = \frac{1}{\| \nabla S^{k} \|^2}$ [10]\\
 
   \begin{python}
 #Define  x size of grid
@@ -425,10 +426,10 @@ for i in range(0, SY + 2):
 #Anisotropy constant
 K = 0.4
 
-#Exchange energy
+#Dzyaloshinskii-Moriya interaction
 D = 0.35
 
-#Dzyaloshinskii-Moriya interaction
+#Exchange energy constant
 J = 1
 
 #Length of step
@@ -458,8 +459,12 @@ def E():
     res = 0
     for i in range(1, SX + 1):
         for j in range(1, SY + 1):
+            #Dzyaloshinski-Moria interaction
+
             tmp = J * np.dot((S[i + 1][j] +
             S[i - 1][j] + S[i][j + 1] + S[i][j - 1]), S[i][j])
+
+
             tmp2 = D * (+ np.dot(np.cross(S[i + 1][j], S[i][j]), x)
                         + np.dot(np.cross(S[i][j + 1], S[i][j]), y)
                         - np.dot(np.cross(S[i - 1][j], S[i][j]), x)
@@ -536,7 +541,7 @@ while(maxNorm > 0.001):
 print(E())
 
  \end{python}
-\subsection{Метод 3}
+\subsection{Метод 3 Метод сопряженных градиентов}
  Приведу реализацию метода сопряженных градиентов Флетчера - Ривза
  \begin{python}
 import numpy as np
@@ -558,9 +563,15 @@ for i in range(0, SY + 2):
     S[0][i] = np.array([0, 0, 0])
     S[SX + 1][i] = np.array([0, 0, 0])
 
+#Anisotropy constant
 K = 0.4
+
+#Dzyaloshinskii-Moriya interaction
 D = 0.35
+
+#Exchange energy
 J = 1
+
 step = 0.1
 
 def normalPrintS():
@@ -641,11 +652,9 @@ for i in range(1, SX + 1):
     for j in range(1, SY + 1):
         SinTheirCode[i][j] = grad(i, j)
 
-initEnergy = 0
-endEnergy = E()
+maxNorm = 10
 
-while(abs(endEnergy - initEnergy) > 0.000001):
-    initEnergy = E()
+while(maxNorm > 0.001):
     ch = 0
     zn = 0
     for i in range(1, SX + 1):
@@ -661,6 +670,7 @@ while(abs(endEnergy - initEnergy) > 0.000001):
                                 + beta * SinTheirCode[i][j])
     ch = 0
     zn = 0
+
     for i in range(1, SX + 1):
         for j in range(1, SY + 1):
             ch = ch + np.dot(
@@ -668,20 +678,25 @@ while(abs(endEnergy - initEnergy) > 0.000001):
             zn = zn + np.dot(
                 gradX(SinTheirCode, i, j), SinTheirCode[i][j])
 
+
     alpha  = - ch/zn
 
     maxNorm =  0
     for i in range(1, SX + 1):
         for j in range(1, SY + 1):
             #Make step
-            S[i][j] = S[i][j] - alpha * SinTheirCode[i][j]
+            g = grad(i,j)
+            projGradOnS = np.dot(S[i][j], g)
+            g = g - projGradOnS * S[i][j]
+            maxNorm = np.maximum(maxNorm, np.linalg.norm(g))
+            newS[i][j] = S[i][j] - alpha * SinTheirCode[i][j]
+    S = newS
     normalize()
-    endEnergy = E()
 print(E())
 
  \end{python}
 
-\subsection{Метод 4}
+\subsection{Метод 4 Инерционный градиентный спуск}
 
  \begin{python}
 
@@ -699,9 +714,16 @@ for i in range(0, SY + 2):
     S[0][i] = np.array([0, 0, 0])
     S[SX + 1][i] = np.array([0, 0, 0])
 
+#Anizotropy energy
 K = 0.4
+
+#Dzyloshinsi-Moria  interaction
 D = 0.35
+
+#Exchange  energy
 J = 1
+
+#Length of step
 step = 0.1
 
 def normalPrintS():
@@ -766,10 +788,8 @@ for i in range(1, SX + 1):
         prev_grad[i][j] = grad(i, j)
 omega = 1
 k = 0
-energy  = E()
-cur_energy = 0
+maxNorm = 10
 while(maxNorm > 0.001):
-    energy =  cur_energy
     newS = np.zeros_like(S)
     maxNorm = 0
     sum_of_prev_grad = 0
@@ -788,7 +808,7 @@ while(maxNorm > 0.001):
             sum_of_grad = sum_of_grad + (
                 np.dot(cur_grad[i][j], cur_grad[i][j]))
 
-    omega = sum_of_grad / sum_of_prev_grad
+    omega = 1 / sum_of_grad
 
     for i in range(1, SX + 1):
         for j in range(1, SY + 1):
@@ -806,8 +826,6 @@ while(maxNorm > 0.001):
                     grad(i, j) + prev_grad[i][j] * omega)
     S = newS
     normalize()
-    cur_energy = E()
-    maxNorm = abs(cur_energy - energy)
     k = k + 1
 print(E())
 
@@ -1014,15 +1032,14 @@ $\nabla > 0.001 $
 \begin{center}
 \begin{tabular}{ c c c c c}
        & метод 1 & метод 2 & метод 3 & метод 4 \\
- n = 2 & 0.74    & 0.45     & 1.15 & 2.15 \\
- n = 3 & 1.48    & 0.9      & 3.5 & 5.81 \\
- n = 4 & 3.18    & 1.8      & 5.8 & 10.07 \\
- n = 5 & 6.83    & 3.0      & 18.7 & 15.6 \\
- n = 6 & 10.21   & 5.8      & 26.0 & 31.0 \\
+ n = 2 & 0.74    & 0.45     & 0.8 & 0.79 \\
+ n = 3 & 1.48    & 0.9      & 3 & 2.35 \\
+ n = 4 & 3.18    & 1.8      & 5.8 & 3.06 \\
+ n = 5 & 6.83    & 3.0      & 8 & 6.0 \\
+ n = 6 & 10.21   & 5.8      & 10.0 & 31.0 \\
 \end{tabular}
 \end{center}
-Исходя из показанных сверху графиков, можно заключить что самым оптимальным методом является метод      , а остальные не такими оптимальными.
-Однако, расход памяти  разных алгоритмах тоже разнится.
+Выходит, что исходя из специфики задачи обычный градиентный спуск здесь работает лучше чем все его аналоги, так как нормировка после каждой итерации вносит слишком большие изменения в ассимптотику сходимости.
  \newpage
     \section{Заключение}
     В данной работе мною была достигнута цель исследования, а именно выяснение наиболее оптимального метода решения этой задачи, приведен  код решения данных задач, проведен их анализ по времени работы.
@@ -1036,9 +1053,9 @@ an Analysis of High Temperature Spin Configurations in Terms of Skyrmion Density
 2)М.Э.АББАСОВ
 МЕТОДЫ ОПТИМИЗАЦИИ\\
 \\
-3)https://numpy.org/doc/1.18/user/basics.types.html (дата обращения: 17.04.2020).\\
+3)https://www.numpy.org/doc/1.18/user/basics.types.html (дата\\ обращения: 17.04.2020).\\
 \\
-4)https://docs.python.org/3/download.html (дата обращения: 17.04.07).\\
+4)https://www.docs.python.org/3/download.html (дата обращения: 17.04.07).\\
 \\
 5)http://www.machinelearning.ru/wiki/index.php?title=\\
 Метод\_сопряжённых\_градиентов (дата обращения: 17.04.2020).\\
@@ -1053,6 +1070,7 @@ an Analysis of High Temperature Spin Configurations in Terms of Skyrmion Density
 9)Fert, A., Reyren, N. & Cros, V. Magnetic skyrmions: advances in physics and potential applications. Nat Rev Mater 2, 17031 (2017).\\ https://doi.org/10.1038/natrevmats.2017.31\\
 \\
 10)А. В. Гасников, СОВРЕМЕННЫЕ ЧИСЛЕННЫЕ МЕТОДЫ ОПТИМИЗАЦИИ. МЕТОД УНИВЕРСАЛЬ-
-НОГО ГРАДИЕНТНОГО СПУСКА
-11)А.Н.Шиплюк Методы оптимиации в задачах аэро газодинамики.
+НОГО ГРАДИЕНТНОГО СПУСКА\\
+\\
+11)А.Н.Шиплюк Методы оптимиации в задачах аэро газодинамики.,стр. 33
 \end{document}

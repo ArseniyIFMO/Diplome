@@ -90,7 +90,7 @@ omega = 1
 k = 0
 maxNorm =  100
 t1 = process_time()
-while(maxNorm > 0.0001):
+while(maxNorm > 0.001):
     newS = np.zeros_like(S)
     maxNorm = 0
     sum_of_prev_grad = 0
@@ -109,7 +109,7 @@ while(maxNorm > 0.0001):
             sum_of_grad = sum_of_grad + (
                 np.dot(cur_grad[i][j], cur_grad[i][j]))
 
-    omega = sum_of_grad / sum_of_prev_grad
+        omega = sum_of_grad / sum_of_prev_grad
 
     for i in range(1, SX + 1):
         for j in range(1, SY + 1):

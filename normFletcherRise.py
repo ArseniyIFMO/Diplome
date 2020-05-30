@@ -5,8 +5,8 @@ import numpy as np
 # matrix_size = 16
 
 
-SX = 7
-SY = 7
+SX = 2
+SY = 2
 x = np.array([1.0, 0.0, 0.0])
 y = np.array([0.0, 1.0, 0.0])
 z = np.array([0.0, 0.0, 1.0])
@@ -89,26 +89,18 @@ for i in range(1, SX + 1):
 
 maxNorm = 10
 t1 = process_time()
-while(maxNorm > 0.0001):
+while(maxNorm > 0.001):
     newS = np.zeros_like(S)
     maxNorm = 0
     sum_of_prev_grad = 0
     sum_of_grad  =  0
-    for i in range(1, SX + 1):
-        for j in range(1, SY + 1):
-            cur_grad[i][j] = grad(i,  j)
-
-    for i in range(1, SX + 1):
-        for j in range(1, SY + 1):
-            sum_of_prev_grad = (sum_of_prev_grad +
-                                np.dot(prev_grad[i][j], prev_grad[i][j]))
 
     for i in range(1, SX + 1):
         for j in range(1, SY + 1):
             sum_of_grad = (sum_of_grad
                            + np.dot(cur_grad[i][j], cur_grad[i][j]))
 
-    alpha = sum_of_grad / sum_of_prev_grad
+    alpha = 1 / sum_of_grad
 
     for i in range(1, SX + 1):
         for j in range(1, SY + 1):
@@ -118,10 +110,9 @@ while(maxNorm > 0.0001):
             maxNorm = np.maximum(maxNorm, np.linalg.norm(g))
             prev_grad[i][j] =grad(i, j)
             newS[i][j] = S[i][j] - alpha * grad(i, j)
-
     S = newS
     normalize()
-    print(E(), E2())
+    #print(E(), E2())
 t2 = process_time()
 print(t2 - t1)
 print(E())

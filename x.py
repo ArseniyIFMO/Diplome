@@ -5,8 +5,8 @@ import numpy as np
 # matrix_size = 16
 
 
-SX = 4
-SY = 4
+SX = 2
+SY = 2
 x = np.array([1.0, 0.0, 0.0])
 y = np.array([0.0, 1.0, 0.0])
 z = np.array([0.0, 0.0, 1.0])
@@ -88,14 +88,14 @@ while(maxNorm > 0.0001):
             g = g - projGradOnS * S[i][j]
             maxNorm = np.maximum(maxNorm, np.linalg.norm(g))
             newS[i][j] = S[i][j] - step * grad(i, j)
-    #print(E(), maxNorm)
+    print(E(), maxNorm)
     S = newS
     k= k + 1
-    print(maxNorm)
+    #print(maxNorm)
     normalize()
 t2 = process_time()
 #print(E(), maxNorm)
-print(k)
+print(S)
 print(E(), E2())
 
 
